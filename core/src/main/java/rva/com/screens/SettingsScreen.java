@@ -5,15 +5,25 @@ import static rva.com.services.GameResources.SETTINGS_ITEMS;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
 import java.util.ArrayList;
 import rva.com.Main;
 import rva.com.uix.ButtonView;
+import rva.com.uix.SliderView;
 
 public class SettingsScreen  extends BaseScreen {
     private ArrayList<ButtonView> buttonArray;
+    private SliderView slider;
+    private Stage stage;
     public SettingsScreen(Main game) {
         super(game);
         this.buttonArray = new ArrayList<>();
+        this.slider = new SliderView(50, 50, 100, 30, 0.0f, 1.0f, 0.1f, 0.5f, "Музыка", game.getWhiteFont());
+        this.stage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(this.stage);
+        stage.addActor(slider);
     }
 
     private void createButtons() {
@@ -36,7 +46,7 @@ public class SettingsScreen  extends BaseScreen {
     @Override
     public void handle() {
         if (Gdx.input.isTouched()) {
-            Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+//            Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             Vector3 touch = this.game.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             int index = -1;
             for (int i=0; i < SETTINGS_ITEMS.length; i++) {
@@ -81,7 +91,13 @@ public class SettingsScreen  extends BaseScreen {
         batch.begin();
         this.game.getTitleFont().draw(batch, "НАСТРОЙКИ", centerX, centerY);
         for (ButtonView button: this.buttonArray) { button.draw(batch); }
+
+        this.slider.draw(batch);
+
         batch.end();
+
+
+//        stage.draw();
     }
     @Override
     public void show() {
@@ -113,6 +129,7 @@ public class SettingsScreen  extends BaseScreen {
 
     @Override
     public void update(float delta) {
+        stage.act(delta);
 
     }
 

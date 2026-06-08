@@ -28,7 +28,7 @@ public class GameSession {
         this.brickWidth = (int) (screenWidth / 10);
         this.brickHeight = (int) ((this.highBorder - this.lowBorder) / 5);
         this.mainFontSize = (int) this.screenHeight / 20;
-        this.titleFontSize = (int) this.screenHeight / 15;
+        this.titleFontSize = (int) this.screenHeight / 18;
         this.titleLine = (int) this.screenHeight - this.titleFontSize;
         this.menuLine = (int) this.screenHeight / 2;
     }
