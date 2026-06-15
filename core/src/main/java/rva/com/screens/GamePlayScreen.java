@@ -36,6 +36,7 @@ public class GamePlayScreen extends BaseScreen {
         world = new World(new Vector2(0, 0), true); // Без гравитации
         this.shapeRenderer = game.getShapeRenderer();
         this.gameSession = game.getGameSession();
+        this.gameSession.setLives(3);
         this.font = game.getFont();
         createWalls();
         createPaddle();
@@ -134,10 +135,11 @@ public class GamePlayScreen extends BaseScreen {
     }
 
     private void checkGameEndConditions() {
-//        if (gameSession.isGameOver()) {
-////            game.setScreen(new GameOverScreen(game, gameSession.getScore()));
-//            game.setScreen(game.getFinish());
-//        } else if (gameSession.isLevelCompleted()) {
+        if (gameSession.isGameOver()) {
+//            game.setScreen(new GameOverScreen(game, gameSession.getScore()));
+            game.setScreen(game.getFinish());
+        }
+//        else if (gameSession.isLevelCompleted()) {
 //            // Переход на следующий уровень или победа
 ////            game.setScreen(new GameOverScreen(game, gameSession.getScore(), true));
 //            game.setScreen(game.getFinish());
@@ -178,8 +180,12 @@ public class GamePlayScreen extends BaseScreen {
 
     @Override
     public void update(float delta) {
-        // world.step(delta, 6, 2);
-        world.step(delta, 2, 1);
+//        Ускорить игру: увеличьте delta (например, delta * 2.0f).
+//        Замедлить игру: уменьшите delta (например, delta * 0.5f).
+        delta = delta * 0.2f;
+        world.step(delta, 10, 8);
+//        world.step(delta, 6, 2);
+//
         paddle.update();
         ball.update();
         // Удаляем разрушенные кирпичи
@@ -188,6 +194,12 @@ public class GamePlayScreen extends BaseScreen {
                 world.destroyBody(bricks.get(i).getBody());
                 bricks.removeIndex(i);
             }
+        }
+
+        if (ball.getY() < 0) {
+            ball.dispose();
+            gameSession.setLives(gameSession.getLives() - 1);
+            createBall();
         }
 
     }

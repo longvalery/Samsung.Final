@@ -25,7 +25,7 @@ public class GameSession {
         this.paddleVelocity = 10;
         this.paddleWidth = 100;
         this.paddleHeight = 20;
-        this.ballVelocity = 200;
+        this.ballVelocity = 500;
         this.ballWidth = 30;
         this.ballHeight = 30;
     }
@@ -153,8 +153,16 @@ public class GameSession {
         return this.score;
     }
 
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     public int getLives() {
         return this.lives;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
     }
 
     public void update(float delta) {

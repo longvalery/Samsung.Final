@@ -40,11 +40,9 @@ public class Ball {
         fixtureDef.density = 1f;
         fixtureDef.friction = 0.3f;
         fixtureDef.restitution = 1f; // Максимальное отражение
-
-
         body.createFixture(fixtureDef);
-
         shape.dispose();
+
         this.texture = new Texture(GameResources.BALL_PATH);
         this.sprite = new Sprite(texture);
         this.sprite.setSize(width, height); // масштабируем спрайт
@@ -87,6 +85,11 @@ public class Ball {
     public Body getBody() {
         return body;
     }
+
+    public float getY() {
+        Vector2 position = body.getPosition();
+        return position.y;
+                        }
 
     public void dispose() {
         this.texture.dispose();

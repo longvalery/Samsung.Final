@@ -59,9 +59,9 @@ public class GameContactListener implements ContactListener {
 
             if (velocity != null) {
                 System.out.println(String.format("velocity x: %8.3f, y %8.3f, ABS %8.3f", velocity.x, velocity.y, velocity.len()));
-                if (abs(velocity.y) < 0.1f)  {
+                if ((abs(velocity.y) < 0.5f) && (velocity.y < 0)) {
                     velocity.y = velocity.y - 5.0f; ball.setLinearVelocity(velocity);
-                                              }
+                                                                 }
             }
         }
     }
