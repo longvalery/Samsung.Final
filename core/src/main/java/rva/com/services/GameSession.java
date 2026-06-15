@@ -9,6 +9,8 @@ public class GameSession {
     private int brickWidth, brickHeight;
     private int mainFontSize, titleFontSize;
     private int titleLine, menuLine;
+    private int paddleVelocity, paddleWidth, paddleHeight;
+    private int ballVelocity, ballWidth, ballHeight;
     private int widthSettingsButton, heightSettingsButton
         , minLineSettingsButton, maxLineSettingsButton
         , xSettingsButton, deltaSettingsButton;
@@ -19,6 +21,12 @@ public class GameSession {
     public GameSession() {
         musicFlag = true;
         soundFlag = true;
+        this.paddleVelocity = 10;
+        this.paddleWidth = 100;
+        this.paddleHeight = 20;
+        this.ballVelocity = 100;
+        this.ballWidth = 50;
+        this.ballHeight = 50;
     }
 
     public void calcSizes() {
@@ -67,6 +75,14 @@ public class GameSession {
             default:
                 return "Неизвестная платформа";
         }
+    }
+
+    public int getPaddleVelocity() {
+        return paddleVelocity;
+    }
+
+    public void setPaddleVelocity(int paddleVelocity) {
+        this.paddleVelocity = paddleVelocity;
     }
 
     public int getScreenWidth() {
@@ -205,5 +221,33 @@ public class GameSession {
 
     public boolean isLevelCompleted() {
         return true; // !!!
+    }
+
+    public int getPaddleWidth() {
+        return paddleWidth;
+    }
+
+    public void setPaddleWidth(int paddleWidth) {
+        this.paddleWidth = paddleWidth;
+    }
+
+    public int getPaddleHeight() {
+        return paddleHeight;
+    }
+
+    public void setPaddleHeight(int paddleHeight) {
+        this.paddleHeight = paddleHeight;
+    }
+
+    public int getBallVelocity() {
+        return ballVelocity;
+    }
+
+    public int getBallWidth() {
+        return ballWidth;
+    }
+
+    public int getBallHeight() {
+        return ballHeight;
     }
 }

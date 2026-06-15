@@ -21,6 +21,7 @@ public class GameOverScreen extends BaseScreen {
 //        this(game, score, false);
         this.font = game.getFont();
         this.game = game;
+        this.message = "";
     }
 
 //    public GameOverScreen(Main game, int score, boolean victory) {

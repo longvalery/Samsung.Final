@@ -82,6 +82,7 @@ public class Main extends ApplicationAdapter {
         this.fontWithShader = createTwoColorFont(this.gameSession.getTitleFontSize(), GameResources.TITLE_FONT_PATH);
         this.titleFont = fontWithShader.font;
         this.shader = fontWithShader.shader;
+        this.shapeRenderer = new ShapeRenderer();
 
 
         this.menu = new MainMenuScreen(this);
@@ -89,7 +90,7 @@ public class Main extends ApplicationAdapter {
         this.finish = new GameOverScreen(this);
         this.settings = new SettingsScreen(this);
 
-        shapeRenderer = new ShapeRenderer();
+
         this.layout = new GlyphLayout();
 
         this.setScreen(this.getMenu());
@@ -103,8 +104,8 @@ public class Main extends ApplicationAdapter {
         this.screen.show();
     }
 
-    private void update() {
-
+    private void update(float delta) {
+         this.screen.update(delta);
     }
 
     private void draw() {
@@ -132,7 +133,7 @@ public class Main extends ApplicationAdapter {
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
         this.screen.render(delta);
-//        this.update();
+        this.update(delta);
 //        this.draw();
 
     }

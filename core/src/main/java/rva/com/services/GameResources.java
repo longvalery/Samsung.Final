@@ -8,6 +8,8 @@ public class GameResources {
     public static final String TITLE_FONT_PATH = "fonts/impact.ttf";
 
     public static final String BACKGROUND_PATH = "textures/wall.png";
+    public static final String PADDLE_PATH = "textures/paddle.png";
+    public static final String BALL_PATH = "textures/ball.png";
     public static final String BUTTON_PATH = "textures/button_background_long_brown.png";
 
     public static final String GAME_NAME = "Разбей здесь ВСЁ !!!";

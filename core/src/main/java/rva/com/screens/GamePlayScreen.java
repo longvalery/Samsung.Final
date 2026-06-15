@@ -5,43 +5,83 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 import rva.com.Main;
+import rva.com.components.Ball;
+import rva.com.components.Paddle;
+import rva.com.components.Wall;
 import rva.com.services.GameSession;
 
 public class GamePlayScreen extends BaseScreen {
     private ShapeRenderer shapeRenderer;
     private GameSession gameSession;
     private BitmapFont font;
+    private Array<Wall> walls;
+    private World world;
+    private Paddle paddle;
+    private Ball ball;
 
 
     public GamePlayScreen(Main game) {
         super(game);
+        world = new World(new Vector2(0, 0), true); // Без гравитации
         this.shapeRenderer = game.getShapeRenderer();
         this.gameSession = game.getGameSession();
         this.font = game.getFont();
+        createWalls();
+        createPaddle();
+        createBall();
+        world.setContactListener(new GameContactListener());
     }
+
+    private void createPaddle() {
+        paddle = new Paddle(world, Gdx.graphics.getWidth() / 2, 30, this);
+    }
+
+    private void createBall() {
+        ball = new Ball(world, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, this);
+    }
+
+    private void createWalls() {
+        walls = new Array<>();
+        // Левая стена
+        walls.add(new Wall(world, 0, 0, 1, Gdx.graphics.getHeight(), "left"));
+        // Верхняя стена
+        walls.add(new Wall(world, 0, Gdx.graphics.getHeight() - 1, Gdx.graphics.getWidth(), 1, "top"));
+        // Правая стена
+        walls.add(new Wall(world, Gdx.graphics.getWidth() - 1, 0, 1, Gdx.graphics.getHeight(), "right"));
+    }
+
 
     @Override
     public void show() {
         System.out.println("Game Play Screen shown");
-        gameSession.resetGame(); // Сброс состояния игры
+        this.gameSession.resetGame(); // Сброс состояния игры
+        this.ball.reset();
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        this.drawGameElements();
+        camera.update();
+        updateGameLogic(delta);
+        checkGameEndConditions();
+    }
+
+    private void drawGameElements() {
+        Gdx.gl.glClearColor(0.7f, 0.7f, 0.7f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera.update();
-
+        // Логика отрисовки игровых элементов
+        // Пример: отрисовка платформы
+        shapeRenderer.setColor(Color.BLUE);
         // Отрисовка игровых объектов
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
         // Здесь логика отрисовки игрового поля, платформы, мяча, кирпичей
-        drawGameElements();
-
         shapeRenderer.end();
 
         // Отрисовка текста через SpriteBatch
@@ -49,16 +89,11 @@ public class GamePlayScreen extends BaseScreen {
         batch.begin();
         font.draw(batch, "Score: " + gameSession.getScore(), 20, gameSession.getScreenHeight() - 20);
         font.draw(batch, "Lives: " + gameSession.getLives(), 20, gameSession.getScreenHeight() - 50);
+        this.paddle.draw(batch);
+        this.ball.draw(batch);
         batch.end();
 
-        updateGameLogic(delta);
-        checkGameEndConditions();
-    }
 
-    private void drawGameElements() {
-        // Логика отрисовки игровых элементов
-        // Пример: отрисовка платформы
-        shapeRenderer.setColor(Color.BLUE);
 //        shapeRenderer.rect(
 //            gameSession.getPaddleX(),
 //            gameSession.getPaddleY(),
@@ -70,17 +105,18 @@ public class GamePlayScreen extends BaseScreen {
     private void updateGameLogic(float delta) {
         // Обновление позиций объектов, проверка столкновений и т. д.
         gameSession.update(delta);
+
     }
 
     private void checkGameEndConditions() {
-        if (gameSession.isGameOver()) {
-//            game.setScreen(new GameOverScreen(game, gameSession.getScore()));
-            game.setScreen(game.getFinish());
-        } else if (gameSession.isLevelCompleted()) {
-            // Переход на следующий уровень или победа
-//            game.setScreen(new GameOverScreen(game, gameSession.getScore(), true));
-            game.setScreen(game.getFinish());
-        }
+//        if (gameSession.isGameOver()) {
+////            game.setScreen(new GameOverScreen(game, gameSession.getScore()));
+//            game.setScreen(game.getFinish());
+//        } else if (gameSession.isLevelCompleted()) {
+//            // Переход на следующий уровень или победа
+////            game.setScreen(new GameOverScreen(game, gameSession.getScore(), true));
+//            game.setScreen(game.getFinish());
+//        }
     }
 
     @Override
@@ -117,7 +153,14 @@ public class GamePlayScreen extends BaseScreen {
 
     @Override
     public void update(float delta) {
+        world.step(delta, 6, 2);
+        paddle.update();
+        ball.update();
 
+    }
+
+    public GameSession getGameSession() {
+        return gameSession;
     }
 
     @Override
