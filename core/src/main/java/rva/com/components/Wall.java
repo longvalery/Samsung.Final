@@ -7,8 +7,10 @@ import com.badlogic.gdx.physics.box2d.World;
 
 public class Wall {
     private Body body;
+    private String type;
 
     public Wall(World world, float x, float y, float width, float height, String type) {
+        this.type = type;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(x + width / 2, y + height / 2);
@@ -26,10 +28,12 @@ public class Wall {
         body.createFixture(fixtureDef);
         shape.dispose();
 
-        body.setUserData("wall_" + type);
+        body.setUserData("wall");
     }
 
     public Body getBody() {
         return body;
     }
+
+    public String getType() { return type; }
 }

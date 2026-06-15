@@ -29,24 +29,18 @@ public class Brick {
         this.game = game;
         this.texture = new Texture(GameResources.BRICKS[type]);
         this.textureBroken = new Texture(GameResources.BROKEN_BRICKS[type]);
-
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(x + width / 2, y + height / 2);
-
         body = world.createBody(bodyDef);
-
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width / 2, height / 2);
-
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.friction = 0.3f;
         fixtureDef.restitution = 0.8f;
-
         body.createFixture(fixtureDef);
         shape.dispose();
-
         this.sprite = new Sprite(texture);
         this.sprite.setSize(width, height); // масштабируем спрайт
         this.spriteBroken = new Sprite(textureBroken);
@@ -60,7 +54,6 @@ public class Brick {
         // перемещаем картинку
         this.sprite.setPosition(originX,  originY);
         this.spriteBroken.setPosition(originX,  originY);
-
         body.setUserData("brick");
     }
 
@@ -71,23 +64,10 @@ public class Brick {
 
     }
 
-    public void destroy() {
-        this.destroyed = true;
-    }
-
-    public boolean isBroken() {
-        return this.broken;
-    }
-
-    public boolean isDestroyed() {
-        return this.destroyed;
-    }
-
-    public void setBroken(boolean broken) {
-        this.broken = broken;
-    }
-
-    public Body getBody() {
-        return this.body;
-    }
+    public void destroy() { this.destroyed = true; }
+    public boolean isBroken() { return this.broken;  }
+    public boolean isDestroyed() { return this.destroyed; }
+    public void setBroken(boolean broken) { this.broken = broken; }
+    public Body getBody() { return this.body;  }
+    public int getType() { return type; }
 }

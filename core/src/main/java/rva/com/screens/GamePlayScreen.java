@@ -29,6 +29,9 @@ public class GamePlayScreen extends BaseScreen {
     private Paddle paddle;
     private Ball ball;
     private Array<Brick> bricks;
+    private float timeScale = 0.4f; // 1.0f !!
+    private float timeStep = 1/60f;   // базовый шаг
+    private float accumulator = 0f;
 
 
     public GamePlayScreen(Main game) {
@@ -96,7 +99,8 @@ public class GamePlayScreen extends BaseScreen {
     }
 
     private void drawGameElements() {
-        Gdx.gl.glClearColor(0.7f, 0.7f, 0.7f, 1);
+        Gdx.gl.glClearColor(0.78f, 0.43f, 0.03f, 1);
+//        Gdx.gl.glClearColor(0.7f, 0.7f, 0.7f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Логика отрисовки игровых элементов
@@ -182,25 +186,33 @@ public class GamePlayScreen extends BaseScreen {
     public void update(float delta) {
 //        Ускорить игру: увеличьте delta (например, delta * 2.0f).
 //        Замедлить игру: уменьшите delta (например, delta * 0.5f).
-        delta = delta * 0.2f;
-        world.step(delta, 10, 8);
-//        world.step(delta, 6, 2);
-//
-        paddle.update();
-        ball.update();
-        // Удаляем разрушенные кирпичи
-        for (int i = bricks.size - 1; i >= 0; i--) {
-            if (bricks.get(i).isDestroyed()) {
-                world.destroyBody(bricks.get(i).getBody());
-                bricks.removeIndex(i);
-            }
-        }
 
-        if (ball.getY() < 0) {
-            ball.dispose();
-            gameSession.setLives(gameSession.getLives() - 1);
-            createBall();
+        accumulator += delta;
+        float scaledStep = timeStep * timeScale;
+        while (accumulator >= scaledStep) {
+            world.step(scaledStep, 6, 2);
+            accumulator -= scaledStep;
+            paddle.update();
+            ball.update();
+            // Удаляем разрушенные кирпичи
+            for (int i = bricks.size - 1; i >= 0; i--) {
+                if (bricks.get(i).isDestroyed()) {
+                    world.destroyBody(bricks.get(i).getBody());
+                    bricks.removeIndex(i);
+                }
+            }
+
+            if ((ball.getY() < 0) || (ball.getX() < 0) || ball.getX() > gameSession.getScreenWidth()) {
+                ball.dispose();
+                gameSession.setLives(gameSession.getLives() - 1);
+                createBall();
+                                                                                                      }
+
         }
+//        delta = delta * 0.2f;
+//        world.step(delta, 10, 8);
+////        world.step(delta, 6, 2);
+////
 
     }
 

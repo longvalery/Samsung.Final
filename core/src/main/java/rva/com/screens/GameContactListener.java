@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 
 import rva.com.components.Ball;
 import rva.com.components.Brick;
+import rva.com.components.Wall;
 
 public class GameContactListener implements ContactListener {
     private GamePlayScreen game;
@@ -37,6 +38,8 @@ public class GameContactListener implements ContactListener {
                 Body brickBody = typeA.equals("brick") ? bodyA : bodyB;
                 Brick brick = findBrickByBody(brickBody);
                 if (brick != null) {
+                    int score = brick.getType() + 1;
+                    this.game.getGameSession().setScore(this.game.getGameSession().getScore() + score);
                     if (brick.isBroken()) { brick.destroy(); }
                     else                  { brick.setBroken(true); }
                 }
@@ -50,19 +53,50 @@ public class GameContactListener implements ContactListener {
                 Body paddleBody = typeA.equals("paddle") ? bodyA : bodyB;
                 handlePaddleCollision(ballBody, paddleBody);
             }
+            else if ((typeA.equals("ball") && typeB.equals("wall")) ||
+                (typeA.equals("wall") && typeB.equals("ball"))) {
+                Body ballBody = typeA.equals("ball") ? bodyA : bodyB;
+                Vector2 velocity = bodyB.getLinearVelocity();
+                System.out.println(String.format("WALL velocity x: %8.3f, y %8.3f, ABS %8.3f", velocity.x, velocity.y, velocity.len()));
+                Body wall = typeA.equals("wall") ? bodyA : bodyB;
+                Vector2 position = wall.getPosition();
+                if (position.x < 1.0) {
+                    System.out.println("Left");
+                    velocity.x = - velocity.x;
+                    velocity.y = velocity.y;
+
+                                      }
+                else if (position.y > (game.getGameSession().getScreenHeight() - 1) ) {
+                    System.out.println("Top");
+                    velocity.y = - velocity.y;
+                    velocity.x = velocity.x;
+                                                                                      }
+                else  {
+                    System.out.println("Right");
+                    velocity.x = - velocity.x;
+                    velocity.y = velocity.y;
+                      }
+                if (abs(velocity.y) < 5.0f) { velocity.y = - 20.0f; }
+                System.out.println(String.format("WALL velocity x: %8.3f, y %8.3f, ABS %8.3f", velocity.x, velocity.y, velocity.len()));
+                ballBody.setLinearVelocity(velocity);
+
+                System.out.println(String.format("position x: %8.3f, y %8.3f", position.x, position.y));
+
+//
+            }
 
 // Убираем случайное горизонтальное движение
-            Vector2 velocity = null;
-            Body ball = null;
-            if (typeA.equals("ball")) { velocity = bodyA.getLinearVelocity(); ball = bodyA; }
-            if (typeB.equals("ball")) { velocity = bodyB.getLinearVelocity(); ball = bodyB;}
-
-            if (velocity != null) {
-                System.out.println(String.format("velocity x: %8.3f, y %8.3f, ABS %8.3f", velocity.x, velocity.y, velocity.len()));
-                if ((abs(velocity.y) < 0.5f) && (velocity.y < 0)) {
-                    velocity.y = velocity.y - 5.0f; ball.setLinearVelocity(velocity);
-                                                                 }
-            }
+//            Vector2 velocity = null;
+//            Body ball = null;
+//            if (typeA.equals("ball")) { velocity = bodyA.getLinearVelocity(); ball = bodyA; }
+//            if (typeB.equals("ball")) { velocity = bodyB.getLinearVelocity(); ball = bodyB;}
+//
+//            if (velocity != null) {
+//                System.out.println(String.format("velocity x: %8.3f, y %8.3f, ABS %8.3f", velocity.x, velocity.y, velocity.len()));
+//                if (abs(velocity.y) < 1.0f) {
+//                    velocity.y = - 10.0f; ball.setLinearVelocity(velocity);
+//                                            }
+//            }
         }
     }
 

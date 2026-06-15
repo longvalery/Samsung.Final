@@ -90,6 +90,10 @@ public class Ball {
         Vector2 position = body.getPosition();
         return position.y;
                         }
+    public float getX() {
+        Vector2 position = body.getPosition();
+        return position.x;
+    }
 
     public void dispose() {
         this.texture.dispose();
