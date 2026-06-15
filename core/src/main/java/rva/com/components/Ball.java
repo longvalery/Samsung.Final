@@ -73,15 +73,15 @@ public class Ball {
         // Поддерживаем постоянную скорость мяча
         Vector2 velocity = body.getLinearVelocity();
         float speed = velocity.len();
-        if (speed < 150f) {
-            velocity.setLength(150f);
+        if (speed < game.getGameSession().getBallVelocity()) {
+            velocity.setLength(game.getGameSession().getBallVelocity());
             body.setLinearVelocity(velocity);
         }
     }
 
     public void reset() {
         body.setTransform(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0);
-        body.setLinearVelocity(100f, -100f);
+        body.setLinearVelocity(game.getGameSession().getBallVelocity(), - game.getGameSession().getBallVelocity());
     }
 
     public Body getBody() {

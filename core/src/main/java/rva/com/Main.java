@@ -28,6 +28,7 @@ import rva.com.screens.SettingsScreen;
 import rva.com.services.FontBuilder;
 import rva.com.services.GameResources;
 import rva.com.services.GameSession;
+import rva.com.services.GameSettings;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
@@ -65,7 +66,7 @@ public class Main extends ApplicationAdapter {
             this.gameSession.setScreenHeight(Gdx.graphics.getHeight());
               }
         System.out.println("Screen sizes: " + this.gameSession.getScreenWidth() + "x" + this.gameSession.getScreenHeight());
-        this.gameSession.calcSizes();
+        this.gameSession.calcSizes(GameSettings.BRICKS_LINE, GameSettings.BRICKS_IN_LINE);
         // Создаём камеру с размерами экрана
         camera = new OrthographicCamera();
         camera.setToOrtho(false, this.gameSession.getScreenWidth(), this.gameSession.getScreenHeight());

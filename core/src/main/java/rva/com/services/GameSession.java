@@ -11,6 +11,7 @@ public class GameSession {
     private int titleLine, menuLine;
     private int paddleVelocity, paddleWidth, paddleHeight;
     private int ballVelocity, ballWidth, ballHeight;
+
     private int widthSettingsButton, heightSettingsButton
         , minLineSettingsButton, maxLineSettingsButton
         , xSettingsButton, deltaSettingsButton;
@@ -24,17 +25,17 @@ public class GameSession {
         this.paddleVelocity = 10;
         this.paddleWidth = 100;
         this.paddleHeight = 20;
-        this.ballVelocity = 100;
-        this.ballWidth = 50;
-        this.ballHeight = 50;
+        this.ballVelocity = 200;
+        this.ballWidth = 30;
+        this.ballHeight = 30;
     }
 
-    public void calcSizes() {
+    public void calcSizes(int bricksLine, int bricksInLine) {
         this.paddleLevel = (int) (0.05 * this.screenHeight);
-        this.lowBorder = (int) (0.7 * this.screenHeight);
-        this.highBorder = (int) (0.95 * this.screenHeight);
-        this.brickWidth = (int) (screenWidth / 10);
-        this.brickHeight = (int) ((this.highBorder - this.lowBorder) / 5);
+        this.lowBorder = (int) (0.6 * this.screenHeight);
+        this.highBorder = (int) (0.85 * this.screenHeight);
+        this.brickWidth = (int) (screenWidth / bricksInLine);
+        this.brickHeight = (int) ((this.highBorder - this.lowBorder) / bricksLine);
         this.mainFontSize = (int) this.screenHeight / 20;
         this.titleFontSize = (int) this.screenHeight / 18;
         this.titleLine = (int) this.screenHeight - this.titleFontSize;

@@ -1,5 +1,7 @@
 package rva.com.screens;
 
+import static java.lang.Math.abs;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -7,7 +9,15 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
+import rva.com.components.Ball;
+import rva.com.components.Brick;
+
 public class GameContactListener implements ContactListener {
+    private GamePlayScreen game;
+    public GameContactListener( GamePlayScreen game ) {
+        this.game = game;
+    }
+
     @Override
     public void beginContact(Contact contact) {
         Body bodyA = contact.getFixtureA().getBody();
@@ -21,26 +31,38 @@ public class GameContactListener implements ContactListener {
             String typeB = (String) userDataB;
 
             // Столкновение мяча с кирпичом
-//            if ((typeA.equals("ball") && typeB.equals("brick")) ||
-//                (typeA.equals("brick") && typeB.equals("ball"))) {
-//
-//                Body brickBody = typeA.equals("brick") ? bodyA : bodyB;
-//                Brick brick = findBrickByBody(brickBody);
-//                if (brick != null) {
-//                    brick.destroy();
-//                }
-//            }
+            if ((typeA.equals("ball") && typeB.equals("brick")) ||
+                (typeA.equals("brick") && typeB.equals("ball"))) {
 
-            // Столкновение мяча со стенкой или ракеткой — просто отражается
-            // Столкновение мяча с ракеткой — специальная логика отскока
-//            else if ((typeA.equals("ball") && typeB.equals("paddle")) ||
-//                (typeA.equals("paddle") && typeB.equals("ball"))) {
-//
-//                Body ballBody = typeA.equals("ball") ? bodyA : bodyB;
-//                Body paddleBody = typeA.equals("paddle") ? bodyA : bodyB;
-//
-//                handlePaddleCollision(ballBody, paddleBody);
-//            }
+                Body brickBody = typeA.equals("brick") ? bodyA : bodyB;
+                Brick brick = findBrickByBody(brickBody);
+                if (brick != null) {
+                    if (brick.isBroken()) { brick.destroy(); }
+                    else                  { brick.setBroken(true); }
+                }
+            }
+
+//             Столкновение мяча со стенкой или ракеткой — просто отражается
+//             Столкновение мяча с ракеткой — специальная логика отскока
+            else if ((typeA.equals("ball") && typeB.equals("paddle")) ||
+                (typeA.equals("paddle") && typeB.equals("ball"))) {
+                Body ballBody = typeA.equals("ball") ? bodyA : bodyB;
+                Body paddleBody = typeA.equals("paddle") ? bodyA : bodyB;
+                handlePaddleCollision(ballBody, paddleBody);
+            }
+
+// Убираем случайное горизонтальное движение
+            Vector2 velocity = null;
+            Body ball = null;
+            if (typeA.equals("ball")) { velocity = bodyA.getLinearVelocity(); ball = bodyA; }
+            if (typeB.equals("ball")) { velocity = bodyB.getLinearVelocity(); ball = bodyB;}
+
+            if (velocity != null) {
+                System.out.println(String.format("velocity x: %8.3f, y %8.3f, ABS %8.3f", velocity.x, velocity.y, velocity.len()));
+                if (abs(velocity.y) < 0.1f)  {
+                    velocity.y = velocity.y - 5.0f; ball.setLinearVelocity(velocity);
+                                              }
+            }
         }
     }
 
@@ -54,7 +76,7 @@ public class GameContactListener implements ContactListener {
         Vector2 paddlePos = paddleBody.getPosition();
 
         // Ширина ракетки (у нас 100 пикселей, но в единицах Box2D)
-        float paddleWidth = 100f; // в пикселях, нужно перевести в метры
+        float paddleWidth = game.getGameSession().getPaddleWidth() ;// 100f; // в пикселях, нужно перевести в метры
         float paddleHalfWidth = paddleWidth / 2f;
 
         // Относительная позиция точки столкновения на ракетке
@@ -66,10 +88,10 @@ public class GameContactListener implements ContactListener {
         Vector2 newVelocity = new Vector2(ballVelocity.x, -ballVelocity.y);
 
         // Коэффициент искажения в зависимости от расстояния от центра
-        float distortionFactor = relativeX * 0.8f; // максимум 80 % искажения
+        float distortionFactor = relativeX * 0.8f; // максимум 80% искажения
 
         // Искажаем горизонтальную составляющую скорости
-        newVelocity.x += distortionFactor * Math.abs(ballVelocity.len());
+        newVelocity.x += distortionFactor * abs(ballVelocity.len());
 
         // Нормализуем и сохраняем исходную скорость
         float speed = ballVelocity.len();
@@ -79,15 +101,12 @@ public class GameContactListener implements ContactListener {
         ballBody.setLinearVelocity(newVelocity);
     }
 
-//    private Brick findBrickByBody(Body body) {
-//        GameWorld gameWorld = Main.getGameWorld(); // Предполагаем, что есть статический метод
-//        for (Brick brick : gameWorld.getBricks()) {
-//            if (brick.getBody() == body) {
-//                return brick;
-//            }
-//        }
-//        return null;
-//    }
+    private Brick findBrickByBody(Body body) {
+        for (Brick brick : this.game.getBricks()) {
+            if (brick.getBody() == body) { return brick; }
+        }
+        return null;
+    }
 
     @Override
     public void endContact(Contact contact) {}

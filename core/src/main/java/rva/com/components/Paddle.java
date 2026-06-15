@@ -33,7 +33,7 @@ public class Paddle {
         PolygonShape shape = new PolygonShape();
         this.height = game.getGameSession().getPaddleHeight();
         this.width = game.getGameSession().getPaddleWidth();
-        shape.setAsBox(this.width, this.height); // Ширина 100, высота 20
+        shape.setAsBox(this.width /2, this.height /2); // Ширина 100, высота 20
         Texture texture = new Texture(GameResources.PADDLE_PATH);
         this.sprite = new Sprite(texture);
         this.sprite.setSize(width, height); // масштабируем спрайт
@@ -69,7 +69,9 @@ public class Paddle {
         float currentX = body.getPosition().x;
 
         // Ограничение движения в пределах экрана
-        targetX = Math.max(50, Math.min(Gdx.graphics.getWidth() - 50, targetX));
+//        targetX = Math.max(50, Math.min(Gdx.graphics.getWidth() - 50, targetX));
+        targetX = Math.max(this.game.getGameSession().getPaddleWidth() / 2,
+                Math.min(this.game.getGameSession().getScreenWidth() - this.game.getGameSession().getPaddleWidth() / 2, targetX));
 
         // Плавное движение
         float velocity = (targetX - currentX) *  this.game.getGameSession().getPaddleVelocity();
