@@ -4,9 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import rva.com.Main;
+import rva.com.services.GameResources;
 
 public class GameOverScreen extends BaseScreen {
     private int finalScore;
@@ -14,27 +17,27 @@ public class GameOverScreen extends BaseScreen {
     private String message;
     BitmapFont font;
     Main game;
+    // Текстуры и спрайты для картинок
+    private Texture winnerTexture;
+    private Texture loserTexture;
+    private Sprite winnerSprite;
+    private Sprite loserSprite;
 
     public GameOverScreen(Main game) {
         super(game);
-        // , int score
-//        this(game, score, false);
         this.font = game.getFont();
         this.game = game;
         this.message = "";
+        winnerTexture = new Texture(GameResources.WINNER_PATH);
+        winnerSprite = new Sprite(winnerTexture);
+        loserTexture = new Texture(GameResources.LOSER_PATH);
+        loserSprite = new Sprite(loserTexture);
+        positionSprites(game.getGameSession().getScreenWidth(), game.getGameSession().getScreenHeight());
     }
 
-//    public GameOverScreen(Main game, int score, boolean victory) {
-//        super(game);
-//        this.finalScore = score;
-//        this.isVictory = victory;
-//        this.message = victory ? "YOU WIN!" : "GAME OVER";
-//    }
 
     @Override
-    public void show() {
-        System.out.println("Game Over Screen shown. Score: " + finalScore);
-    }
+    public void show() { System.out.println("Game Over Screen shown. Score: " + finalScore); }
 
     @Override
     public void render(float delta) {
@@ -43,6 +46,9 @@ public class GameOverScreen extends BaseScreen {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+        // Рисуем картинку в зависимости от исхода
+        if (isVictory && winnerSprite != null) { winnerSprite.draw(batch); }
+        else if (!isVictory && loserSprite != null) { loserSprite.draw(batch);  }
         font.setColor(Color.WHITE);
         font.draw(batch, message, 10,  this.game.getGameSession().getScreenHeight() - 50);
         font.setColor(Color.WHITE);
@@ -50,13 +56,9 @@ public class GameOverScreen extends BaseScreen {
         font.draw(batch, "Еще раз?  Нажмите ПРОБЕЛ", 10, 50);
         batch.end();
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            game.setScreen(game.getMenu());
-        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) { game.setScreen(game.getMenu()); }
     }
 
-    @Override
-    public void resize(int width, int height) {}
 
     @Override
     public void pause() {
@@ -100,6 +102,37 @@ public class GameOverScreen extends BaseScreen {
         this.message = message;
     }
 
+
     @Override
-    public void dispose() {}
+    public void resize(int width, int height) {
+        // Обновляем позицию спрайтов при изменении размера окна
+        positionSprites(width, height);
+    }
+
+    private void positionSprites(float screenWidth, float screenHeight) {
+        if (winnerSprite != null) {
+            winnerSprite.setPosition(
+                (screenWidth - winnerSprite.getWidth()) / 2,
+                (screenHeight - winnerSprite.getHeight()) / 2
+            );
+        }
+        if (loserSprite != null) {
+            loserSprite.setPosition(
+                (screenWidth - loserSprite.getWidth()) / 2,
+                (screenHeight - loserSprite.getHeight()) / 2
+            );
+        }
+    }
+    @Override
+    public void dispose() {
+        // Освобождаем текстуры, чтобы избежать утечек памяти
+        if (winnerTexture != null) {
+            winnerTexture.dispose();
+            winnerTexture = null;
+        }
+        if (loserTexture != null) {
+            loserTexture.dispose();
+            loserTexture = null;
+        }
+    }
 }
