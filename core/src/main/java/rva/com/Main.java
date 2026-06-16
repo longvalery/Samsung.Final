@@ -171,9 +171,7 @@ public class Main extends ApplicationAdapter {
         return camera;
     }
 
-    public BitmapFont getFont() {
-        return font;
-    }
+    public BitmapFont getFont() { return font; }
 
     public GameSession getGameSession() {
         return gameSession;

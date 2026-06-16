@@ -20,6 +20,7 @@ import rva.com.managers.AudioManager;
 import rva.com.services.GameResources;
 import rva.com.services.GameSession;
 import rva.com.services.GameSettings;
+import rva.com.uix.ImageView;
 
 public class GamePlayScreen extends BaseScreen {
     private ShapeRenderer shapeRenderer;
@@ -33,6 +34,9 @@ public class GamePlayScreen extends BaseScreen {
     private float timeScale = 0.4f; // 1.0f !!
     private float timeStep = 1/60f;   // базовый шаг
     private float accumulator = 0f;
+    private ImageView topBlackoutView;
+    private Array<ImageView> lives;
+
 
 
     public GamePlayScreen(Main game) {
@@ -46,9 +50,25 @@ public class GamePlayScreen extends BaseScreen {
         createPaddle();
         createBall();
         createBricks();
+
+        this.topBlackoutView = new ImageView(0, this.gameSession.getScreenHeight(),  GameResources.TOP_IMAGE_PATH);
+        this.topBlackoutView.setY(this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight());
+        createDemoLives();
         world.setContactListener(new GameContactListener(this));
+
     }
 
+    private void createDemoLives() {
+        this.lives = new Array<>();
+        for (int i=0; i < this.gameSession.getLives(); i++) {
+            ImageView image = new ImageView(this.gameSession.getScreenWidth() / 2 + i * 10
+                , this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight() / 2,  GameResources.BALL_PATH);
+            image.setWidth(this.gameSession.getBallWidth());
+            image.setHeight(this.gameSession.getBallHeight());
+            image.getSprite().setSize(this.gameSession.getBallWidth(), this.gameSession.getBallHeight());
+            this.lives.add(image);
+        }
+    }
 
     private void createPaddle() {
         paddle = new Paddle(world, Gdx.graphics.getWidth() / 2, 30, this);
@@ -73,8 +93,8 @@ public class GamePlayScreen extends BaseScreen {
 
     private void createBricks() {
         this.bricks = new Array<>();
-        int brickWidth = this.gameSession.getBrickWidth() - 1;
-        int brickHeight = this.gameSession.getBrickHeight() - 1;
+        int brickWidth = this.gameSession.getBrickWidth();
+        int brickHeight = this.gameSession.getBrickHeight();
         int spacing = 1;
         int random;
 
@@ -119,12 +139,14 @@ public class GamePlayScreen extends BaseScreen {
         // Отрисовка текста через SpriteBatch
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
+        this.topBlackoutView.draw(batch);
         font.draw(batch, "Очки: " + gameSession.getScore(), 20, gameSession.getScreenHeight() - 20);
 //        font.draw(batch, "Lives: " + gameSession.getLives(), 20, gameSession.getScreenHeight() - 50);
-        font.draw(batch, "Жизни: " + gameSession.getLives(), gameSession.getScreenWidth() - 150, gameSession.getScreenHeight() - 20);
+        // font.draw(batch, "Жизни: " + gameSession.getLives(), gameSession.getScreenWidth() - 150, gameSession.getScreenHeight() - 20);
         this.paddle.draw(batch);
         this.ball.draw(batch);
         for (Brick brick: this.bricks) { brick.draw(batch);}
+        for (int i=0; i < this.gameSession.getLives(); i++) { this.lives.get(i).draw(batch); }
         batch.end();
 
 
@@ -147,8 +169,16 @@ public class GamePlayScreen extends BaseScreen {
 //            game.setScreen(new GameOverScreen(game, gameSession.getScore()));
             game.getFinish().setFinalScore(this.gameSession.getScore());
             game.getFinish().setMessage("Проигрыш");
+            game.getFinish().setVictory(false);
             game.setScreen(game.getFinish());
         }
+        else if (this.bricks.size == 0) {
+            game.getFinish().setFinalScore(this.gameSession.getScore());
+            game.getFinish().setMessage("Победа");
+            game.getFinish().setVictory(true);
+            game.setScreen(game.getFinish());
+        }
+
 //        else if (gameSession.isLevelCompleted()) {
 //            // Переход на следующий уровень или победа
 ////            game.setScreen(new GameOverScreen(game, gameSession.getScore(), true));
@@ -233,5 +263,7 @@ public class GamePlayScreen extends BaseScreen {
     @Override
     public void dispose() {
         // Освобождение игровых ресурсов
+        if (this.topBlackoutView != null) {topBlackoutView.dispose();}
+
     }
 }

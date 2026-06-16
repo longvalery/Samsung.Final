@@ -31,7 +31,7 @@ public class GameSession {
         this.paddleHeight = 20;
         this.ballVelocity = 500;
         this.ballWidth = 30;
-        this.ballHeight = 30;
+        this.ballHeight = this.ballWidth;
     }
 
     public void calcSizes(int bricksLine, int bricksInLine) {
@@ -44,6 +44,10 @@ public class GameSession {
         this.titleFontSize = (int) this.screenHeight / 18;
         this.titleLine = (int) this.screenHeight - this.titleFontSize;
         this.menuLine = (int) this.screenHeight / 2;
+        this.ballWidth = (int) (0.05 *screenWidth);
+        this.ballHeight = this.ballWidth;
+        this.paddleWidth = (int) (0.2 * screenWidth);
+        this.paddleHeight = this.paddleWidth / 5;
     }
 
     public void calcSettingsButtonSize(int itemSize) {

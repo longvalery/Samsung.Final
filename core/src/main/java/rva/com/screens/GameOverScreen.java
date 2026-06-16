@@ -9,23 +9,26 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
 import rva.com.Main;
+import rva.com.managers.InputManager;
 import rva.com.services.GameResources;
 
 public class GameOverScreen extends BaseScreen {
     private int finalScore;
     private boolean isVictory;
     private String message;
-    BitmapFont font;
+    BitmapFont font, whiteFont;
     Main game;
     // Текстуры и спрайты для картинок
     private Texture winnerTexture;
     private Texture loserTexture;
     private Sprite winnerSprite;
     private Sprite loserSprite;
+    private InputManager inputManager;
 
     public GameOverScreen(Main game) {
         super(game);
         this.font = game.getFont();
+        this.whiteFont = game.getWhiteFont();
         this.game = game;
         this.message = "";
         winnerTexture = new Texture(GameResources.WINNER_PATH);
@@ -33,6 +36,8 @@ public class GameOverScreen extends BaseScreen {
         loserTexture = new Texture(GameResources.LOSER_PATH);
         loserSprite = new Sprite(loserTexture);
         positionSprites(game.getGameSession().getScreenWidth(), game.getGameSession().getScreenHeight());
+        this.inputManager = new InputManager(game);
+        Gdx.input.setInputProcessor(inputManager);
     }
 
 
@@ -49,18 +54,32 @@ public class GameOverScreen extends BaseScreen {
         // Рисуем картинку в зависимости от исхода
         if (isVictory && winnerSprite != null) { winnerSprite.draw(batch); }
         else if (!isVictory && loserSprite != null) { loserSprite.draw(batch);  }
-        font.setColor(Color.WHITE);
-        font.draw(batch, message, 10,  this.game.getGameSession().getTitleLine());
-        font.setColor(Color.WHITE);
-        font.draw(batch, "Очки: " + finalScore, 10,  this.game.getGameSession().getLowBorder());
-        font.draw(batch, "Еще раз?", 10
-            , this.game.getGameSession().getLowBorder() - this.game.getGameSession().getHeightSettingsButton());
-        font.draw(batch, "Нажмите ПРОБЕЛ", 10
-            , this.game.getGameSession().getLowBorder() - 2 * this.game.getGameSession().getHeightSettingsButton());
+//        font.setColor(Color.WHITE);
+        whiteFont.draw(batch, message, this.game.getGameSession().getxSettingsButton() + 1,  this.game.getGameSession().getTitleLine() - 1);
+        font.draw(batch, message, this.game.getGameSession().getxSettingsButton(),  this.game.getGameSession().getTitleLine());
+//        font.setColor(Color.WHITE);
+        whiteFont.draw(batch, "Очки: " + finalScore, this.game.getGameSession().getxSettingsButton() + 1
+            ,this.game.getGameSession().getMinLineSettingsButton() + 4 * this.game.getGameSession().getHeightSettingsButton() - 1);
+        font.draw(batch, "Очки: " + finalScore, this.game.getGameSession().getxSettingsButton()
+            ,this.game.getGameSession().getMinLineSettingsButton() + 4 * this.game.getGameSession().getHeightSettingsButton());
 
+        whiteFont.draw(batch, "Еще раз?",  this.game.getGameSession().getxSettingsButton() + 1
+            , this.game.getGameSession().getMinLineSettingsButton() + 3 *  this.game.getGameSession().getHeightSettingsButton() - 1);
+        font.draw(batch, "Еще раз?",  this.game.getGameSession().getxSettingsButton()
+            , this.game.getGameSession().getMinLineSettingsButton() + 3 *  this.game.getGameSession().getHeightSettingsButton());
+
+        whiteFont.draw(batch, "Нажмите ПРОБЕЛ",  this.game.getGameSession().getxSettingsButton() + 1
+            ,  this.game.getGameSession().getMinLineSettingsButton() + 2 * this.game.getGameSession().getHeightSettingsButton() - 1);
+        font.draw(batch, "Нажмите ПРОБЕЛ",  this.game.getGameSession().getxSettingsButton()
+            ,  this.game.getGameSession().getMinLineSettingsButton() + 2 * this.game.getGameSession().getHeightSettingsButton());
+
+        whiteFont.draw(batch, "Или долгое касание",  this.game.getGameSession().getxSettingsButton() + 1
+            ,  this.game.getGameSession().getMinLineSettingsButton() + this.game.getGameSession().getHeightSettingsButton() - 1);
+        font.draw(batch, "Или долгое касание",  this.game.getGameSession().getxSettingsButton()
+            ,  this.game.getGameSession().getMinLineSettingsButton() + this.game.getGameSession().getHeightSettingsButton());
         batch.end();
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) { game.setScreen(game.getMenu()); }
+//        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) { game.setScreen(game.getMenu()); }
+        inputManager.update();
     }
 
 
