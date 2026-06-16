@@ -11,8 +11,8 @@ public class MenuItemDimensions {
     }
 
     public boolean isInside(float x, float y) {
-        System.out.println(String.format("x: %f, this.x: %f, this.x + this.width: %f,y: %f, this.y: %f, this.y + this.height: %f"
-            , x,this.x, this.x + this.width, y, this.y, this.y + this.height));
+//        System.out.println(String.format("x: %f, this.x: %f, this.x + this.width: %f,y: %f, this.y: %f, this.y + this.height: %f"
+//            , x,this.x, this.x + this.width, y, this.y, this.y + this.height));
         return (x >= this.x) && (x < (this.x + this.width)) &&
                (y >= this.y) && (y < (this.y + this.height));
     }

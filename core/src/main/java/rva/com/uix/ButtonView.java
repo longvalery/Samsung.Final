@@ -41,6 +41,7 @@ public class ButtonView extends View {
 
     @Override
     public boolean isHit(float tx, float ty) {
+//        System.out.println(String.format("%6.1f, %6.1f, %6.1f, %6.1f, %6.1f, %6.1f ", getX(), tx,getX() + getWidth(), getY() , ty, getY() + getHeight()));
         return tx >= getX() && tx <= getX() + getWidth() && ty >= getY() && ty <= getY() + getHeight();
     }
 

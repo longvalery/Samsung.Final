@@ -80,7 +80,7 @@ public class MainMenuScreen extends BaseScreen {
         delta = this.game.getGameSession().getMainFontSize() * 2;
 
         for (int i = 0; i < menuItems.length; i++) {
-            y = this.game.getGameSession().getMenuLine() - i * delta;
+            y = this.game.getGameSession().getMenuLine() - i * delta + 10;
             // Тень
             batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
             this.grayFont.draw(batch,menuItems[i], delta + 5, y - 5);
@@ -105,7 +105,7 @@ public class MainMenuScreen extends BaseScreen {
         if (Gdx.input.isTouched()) {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             Vector3 touch = this.game.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            System.out.println(String.format("x: %f, y: %f", touch.x, touch.y));
+//            System.out.println(String.format("x: %f, y: %f", touch.x, touch.y));
 //            System.out.println(String.format("x: %d, y: %d", Gdx.input.getX(), Gdx.input.getY()));
             int index = -1;
             for (int i = 0; i < this.menuItems.length; i++) {
