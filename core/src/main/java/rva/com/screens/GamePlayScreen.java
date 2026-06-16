@@ -16,6 +16,7 @@ import rva.com.components.Ball;
 import rva.com.components.Brick;
 import rva.com.components.Paddle;
 import rva.com.components.Wall;
+import rva.com.managers.AudioManager;
 import rva.com.services.GameResources;
 import rva.com.services.GameSession;
 import rva.com.services.GameSettings;
@@ -48,9 +49,12 @@ public class GamePlayScreen extends BaseScreen {
         world.setContactListener(new GameContactListener(this));
     }
 
+
     private void createPaddle() {
         paddle = new Paddle(world, Gdx.graphics.getWidth() / 2, 30, this);
     }
+
+    public AudioManager getAudio() {  return game.getAudioManager(); }
 
     private void createBall() {
         ball = new Ball(world, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, this);

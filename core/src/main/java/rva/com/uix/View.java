@@ -74,6 +74,6 @@ public class View implements Disposable {
     }
 
     @Override public void dispose() {
-        texture.dispose();
+        if (texture != null) { texture.dispose(); }
     }
 }

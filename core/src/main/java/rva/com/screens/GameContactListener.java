@@ -52,6 +52,7 @@ public class GameContactListener implements ContactListener {
                 Body ballBody = typeA.equals("ball") ? bodyA : bodyB;
                 Body paddleBody = typeA.equals("paddle") ? bodyA : bodyB;
                 handlePaddleCollision(ballBody, paddleBody);
+                game.getAudio().getShootSound().play(game.getGameSession().getSoundVolume());
             }
             else if ((typeA.equals("ball") && typeB.equals("wall")) ||
                 (typeA.equals("wall") && typeB.equals("ball"))) {
