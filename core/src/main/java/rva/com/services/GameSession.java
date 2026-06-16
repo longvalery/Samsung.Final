@@ -3,6 +3,8 @@ package rva.com.services;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 
+import rva.com.managers.MemoryManager;
+
 public class GameSession {
     private int screenWidth, screenHeight;
     private int paddleLevel, lowBorder, highBorder;
@@ -80,6 +82,11 @@ public class GameSession {
         }
     }
 
+
+    public void endGame() {
+        MemoryManager.saveMusicVolume(this.getMusicVolume());
+        MemoryManager.saveSoundVolume(this.getSoundVolume());
+    }
     public int getPaddleVelocity() {
         return paddleVelocity;
     }

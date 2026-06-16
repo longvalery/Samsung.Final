@@ -122,6 +122,7 @@ public class MainMenuScreen extends BaseScreen {
                     game.setScreen(game.getSettings());
                     break;
                 case 2:
+                    game.getGameSession().endGame();
                     Gdx.app.exit();
                     break;
                 default:
@@ -140,6 +141,7 @@ public class MainMenuScreen extends BaseScreen {
                     game.setScreen(game.getSettings());
                     break;
                 case 2:
+                    game.getGameSession().endGame();
                     Gdx.app.exit();
                     break;
             }

@@ -12,16 +12,14 @@ import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
-
 import rva.com.managers.AudioManager;
+import rva.com.managers.MemoryManager;
 import rva.com.screens.BaseScreen;
 import rva.com.screens.GameOverScreen;
 import rva.com.screens.GamePlayScreen;
@@ -98,6 +96,9 @@ public class Main extends ApplicationAdapter {
 
         this.layout = new GlyphLayout();
         this.audioManager = new AudioManager();
+
+        gameSession.setMusicVolume(MemoryManager.loadMusicVolume());
+        gameSession.setSoundVolume(MemoryManager.loadSoundVolume());
         this.setScreen(this.getMenu());
 //        System.out.println("Line: " + "0 " + this.gameSession.getPaddleLevel() + " " + this.gameSession.getScreenWidth() + " " + this.gameSession.getPaddleLevel());
     }
