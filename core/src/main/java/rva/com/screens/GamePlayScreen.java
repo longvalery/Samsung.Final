@@ -145,6 +145,8 @@ public class GamePlayScreen extends BaseScreen {
     private void checkGameEndConditions() {
         if (gameSession.isGameOver()) {
 //            game.setScreen(new GameOverScreen(game, gameSession.getScore()));
+            game.getFinish().setFinalScore(this.gameSession.getScore());
+            game.getFinish().setMessage("Проигрыш");
             game.setScreen(game.getFinish());
         }
 //        else if (gameSession.isLevelCompleted()) {

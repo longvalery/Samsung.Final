@@ -38,18 +38,16 @@ public class GameOverScreen extends BaseScreen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.2f, 0.1f, 0.1f, 1);
+        Gdx.gl.glClearColor(0.78f, 0.43f, 0.03f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-
         batch.begin();
-        font.setColor(Color.RED);
-        font.draw(batch, message, 200, 400);
         font.setColor(Color.WHITE);
-        font.draw(batch, "Final Score: " + finalScore, 200, 350);
-        font.draw(batch, "Press SPACE to return to menu", 200, 300);
+        font.draw(batch, message, 10,  this.game.getGameSession().getScreenHeight() - 50);
+        font.setColor(Color.WHITE);
+        font.draw(batch, "Очки: " + finalScore, 10, 100);
+        font.draw(batch, "Еще раз?  Нажмите ПРОБЕЛ", 10, 50);
         batch.end();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
@@ -88,6 +86,18 @@ public class GameOverScreen extends BaseScreen {
     @Override
     public void update(float delta) {
 
+    }
+
+    public void setFinalScore(int finalScore) {
+        this.finalScore = finalScore;
+    }
+
+    public void setVictory(boolean victory) {
+        isVictory = victory;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override
