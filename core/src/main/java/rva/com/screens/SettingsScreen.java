@@ -1,5 +1,6 @@
 package rva.com.screens;
 
+import static java.lang.Math.round;
 import static rva.com.services.GameResources.BUTTON_PATH;
 import static rva.com.services.GameResources.SETTINGS_ITEMS;
 import com.badlogic.gdx.Gdx;
@@ -12,34 +13,57 @@ import java.util.ArrayList;
 import rva.com.Main;
 import rva.com.uix.ButtonView;
 import rva.com.uix.SliderView;
+import rva.com.uix.SliderViewNice;
+import rva.com.uix.SliderViewVeryNice;
+
 
 public class SettingsScreen  extends BaseScreen {
     private ArrayList<ButtonView> buttonArray;
-    private SliderView slider;
+    private ArrayList<SliderViewVeryNice> sliderArray;
     private Stage stage;
+
     public SettingsScreen(Main game) {
         super(game);
         this.buttonArray = new ArrayList<>();
-        this.slider = new SliderView(50, 50, 100, 30, 0.0f, 1.0f, 0.1f, 0.5f, "Музыка", game.getWhiteFont());
+        this.sliderArray = new ArrayList<>();
         this.stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(this.stage);
-        stage.addActor(slider);
+
     }
 
     private void createButtons() {
         this.buttonArray.clear();
-        for (int i=0; i < SETTINGS_ITEMS.length; i++) {
-            this.buttonArray.add(new ButtonView(
-                this.game.getGameSession().getxSettingsButton(),
-                this.game.getGameSession().getMaxLineSettingsButton()
+        for (int i = 0; i < SETTINGS_ITEMS.length; i++) {
+            if (i > 1) {
+                this.buttonArray.add(new ButtonView(
+                    this.game.getGameSession().getxSettingsButton(),
+                    this.game.getGameSession().getMaxLineSettingsButton()
+                        - i * (this.game.getGameSession().getDeltaSettingsButton()
+                        + this.game.getGameSession().getHeightSettingsButton()),
+                    this.game.getGameSession().getWidthSettingsButton(),
+                    this.game.getGameSession().getHeightSettingsButton(),
+                    this.game.getWhiteFont(),
+                    BUTTON_PATH,
+                    SETTINGS_ITEMS[i]
+                ));
+            } else {
+                String name = (i == 0) ? "Музыка": "Звук";
+                float value = (i == 0) ? this.game.getGameSession().getMusicVolume(): this.game.getGameSession().getSoundVolume();
+                SliderViewVeryNice slider = new SliderViewVeryNice(this.game.getGameSession().getxSettingsButton()
+                    , this.game.getGameSession().getMaxLineSettingsButton()
                     - i * (this.game.getGameSession().getDeltaSettingsButton()
-                    + this.game.getGameSession().getHeightSettingsButton() ),
-                this.game.getGameSession().getWidthSettingsButton(),
-                this.game.getGameSession().getHeightSettingsButton(),
-                this.game.getWhiteFont(),
-                BUTTON_PATH,
-                SETTINGS_ITEMS[i]
-            ));
+                    + this.game.getGameSession().getHeightSettingsButton())
+                    , this.game.getGameSession().getWidthSettingsButton()
+                    , this.game.getGameSession().getHeightSettingsButton() - 20
+                    , 0.0f, 1.0f, 0.1f
+                    , value
+                    , name
+                    , game.getWhiteFont()
+                    , game, i + 1);
+                stage.addActor(slider);
+                this.sliderArray.add(slider);
+
+            }
         }
     }
 
@@ -49,7 +73,7 @@ public class SettingsScreen  extends BaseScreen {
 //            Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             Vector3 touch = this.game.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             int index = -1;
-            for (int i=0; i < SETTINGS_ITEMS.length; i++) {
+            for (int i = 0; i < this.buttonArray.size(); i++) {
                 if (this.buttonArray.get(i).isHit(touch.x, touch.y)) {
                     index = i;
                     break;
@@ -57,27 +81,28 @@ public class SettingsScreen  extends BaseScreen {
             }
             String line;
             switch (index) {
+//                case 0:
+//                    this.game.getGameSession().setMusicFlag(! this.game.getGameSession().isMusicFlag());
+//                    line = "Музыка: " + (this.game.getGameSession().isMusicFlag() ? "Вкл.": "ВЫКЛ.");
+//                    this.buttonArray.get(0).setText(line);
+//                    break;
+//                case 1:
+//                    this.game.getGameSession().setSoundFlag(! this.game.getGameSession().isSoundFlag());
+//                    line = "Звук: " + (this.game.getGameSession().isSoundFlag() ? "Вкл.": "ВЫКЛ.");
+//                    this.buttonArray.get(1).setText(line);
+//                    break;
                 case 0:
-                    this.game.getGameSession().setMusicFlag(! this.game.getGameSession().isMusicFlag());
-                    line = "Музыка: " + (this.game.getGameSession().isMusicFlag() ? "Вкл.": "ВЫКЛ.");
-                    this.buttonArray.get(0).setText(line);
-                    break;
-                case 1:
-                    this.game.getGameSession().setSoundFlag(! this.game.getGameSession().isSoundFlag());
-                    line = "Звук: " + (this.game.getGameSession().isSoundFlag() ? "Вкл.": "ВЫКЛ.");
-                    this.buttonArray.get(1).setText(line);
-                    break;
-                case 2:
 
                     break;
-                case 3:
+                case 1:
                     this.game.setScreen(this.game.getMenu());
                     break;
                 default:
                     break;
             }
-                                   }
-                         }
+        }
+    }
+
     @Override
     public void draw() {
         Gdx.gl.glClearColor(0.78f, 0.43f, 0.03f, 1);
@@ -90,15 +115,32 @@ public class SettingsScreen  extends BaseScreen {
 
         batch.begin();
         this.game.getTitleFont().draw(batch, "НАСТРОЙКИ", centerX, centerY);
-        for (ButtonView button: this.buttonArray) { button.draw(batch); }
+        for (ButtonView button : this.buttonArray) {
+            button.draw(batch);
+        }
 
-        this.slider.draw(batch);
+        for (SliderViewVeryNice slider : this.sliderArray) {
+            slider.draw(batch, 1.0f);
+        }
 
         batch.end();
 
 
 //        stage.draw();
     }
+
+    public void changeMusicVolume(float value) {
+        value = (float) (Math.round(value * 100.0) / 100.0);
+        game.getGameSession().setMusicVolume(value);
+        game.getAudioManager().getBackgroundMusic().setVolume(value);
+    }
+
+    public void changeSoundVolume(float value) {
+        value = (float) (Math.round(value * 100.0) / 100.0);
+        game.getGameSession().setSoundVolume(value);
+        game.getAudioManager().getShootSound().play(value);
+    }
+
     @Override
     public void show() {
         this.game.getGameSession().calcSettingsButtonSize(SETTINGS_ITEMS.length);
@@ -135,5 +177,9 @@ public class SettingsScreen  extends BaseScreen {
 
     @Override
     public void dispose() {
+        for (SliderViewVeryNice slider : this.sliderArray) { slider.dispose();  }
+        for( ButtonView button :this.buttonArray) {  button.dispose();  }
+        this.stage.dispose();
     }
+
 }

@@ -12,6 +12,8 @@ public class GameSession {
     private int paddleVelocity, paddleWidth, paddleHeight;
     private int ballVelocity, ballWidth, ballHeight;
 
+    private float musicVolume, soundVolume;
+
     private int widthSettingsButton, heightSettingsButton
         , minLineSettingsButton, maxLineSettingsButton
         , xSettingsButton, deltaSettingsButton;
@@ -259,4 +261,12 @@ public class GameSession {
     public int getBallHeight() {
         return ballHeight;
     }
+
+    public float getMusicVolume() { return musicVolume; }
+
+    public void setMusicVolume(float musicVolume) { this.musicVolume = musicVolume; }
+
+    public float getSoundVolume() { return soundVolume; }
+
+    public void setSoundVolume(float soundVolume) { this.soundVolume = soundVolume;  }
 }

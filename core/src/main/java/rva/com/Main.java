@@ -3,6 +3,7 @@ package rva.com;
 import static rva.com.services.FontBuilder.createTwoColorFont;
 
 import static rva.com.services.GameResources.GAME_NAME;
+import static rva.com.services.GameResources.SETTINGS_ITEMS;
 import static rva.com.services.GameSettings.SCREEN_HEIGHT;
 import static rva.com.services.GameSettings.SCREEN_WIDTH;
 
@@ -20,6 +21,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import rva.com.managers.AudioManager;
 import rva.com.screens.BaseScreen;
 import rva.com.screens.GameOverScreen;
 import rva.com.screens.GamePlayScreen;
@@ -48,6 +50,8 @@ public class Main extends ApplicationAdapter {
     private ShaderProgram shader;
     private FontBuilder.FontWithShader fontWithShader;
 
+    private AudioManager audioManager;
+
     @Override
     public void create() {
         this.gameSession = new GameSession();
@@ -67,6 +71,7 @@ public class Main extends ApplicationAdapter {
               }
         System.out.println("Screen sizes: " + this.gameSession.getScreenWidth() + "x" + this.gameSession.getScreenHeight());
         this.gameSession.calcSizes(GameSettings.BRICKS_LINE, GameSettings.BRICKS_IN_LINE);
+        this.gameSession.calcSettingsButtonSize(SETTINGS_ITEMS.length);
         // Создаём камеру с размерами экрана
         camera = new OrthographicCamera();
         camera.setToOrtho(false, this.gameSession.getScreenWidth(), this.gameSession.getScreenHeight());
@@ -91,9 +96,8 @@ public class Main extends ApplicationAdapter {
         this.finish = new GameOverScreen(this);
         this.settings = new SettingsScreen(this);
 
-
         this.layout = new GlyphLayout();
-
+        this.audioManager = new AudioManager();
         this.setScreen(this.getMenu());
 //        System.out.println("Line: " + "0 " + this.gameSession.getPaddleLevel() + " " + this.gameSession.getScreenWidth() + " " + this.gameSession.getPaddleLevel());
     }
@@ -225,6 +229,8 @@ public class Main extends ApplicationAdapter {
     public BitmapFont getLitleFont() {
         return litleFont;
     }
+
+    public AudioManager getAudioManager() { return audioManager; }
 
     @Override
     public void dispose() {

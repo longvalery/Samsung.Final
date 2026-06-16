@@ -1,0 +1,34 @@
+package rva.com.managers;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+
+import rva.com.services.GameResources;
+
+public class AudioManager {
+    private Music backgroundMusic;
+    private Sound shootSound;
+    private Sound explosionSound;
+
+    public AudioManager() {
+        this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal(GameResources.BACKGROUND_MUSIC_PATH));
+        this.shootSound = Gdx.audio.newSound(Gdx.files.internal(GameResources.SHOOT_SOUND_PATH));
+//        this.explosionSound = Gdx.audio.newSound(Gdx.files.internal(GameResources.DESTROY_SOUND_PATH));
+        this.backgroundMusic.setVolume(0.07f); // принимает значение от 0 до 1
+        this.backgroundMusic.setLooping(true);
+        this.backgroundMusic.play();
+    }
+
+    public Music getBackgroundMusic() {
+        return backgroundMusic;
+    }
+
+    public Sound getShootSound() {
+        return shootSound;
+    }
+
+    public Sound getExplosionSound() {
+        return explosionSound;
+    }
+}
