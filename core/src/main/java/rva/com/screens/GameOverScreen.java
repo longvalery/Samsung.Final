@@ -53,8 +53,11 @@ public class GameOverScreen extends BaseScreen {
         font.draw(batch, message, 10,  this.game.getGameSession().getTitleLine());
         font.setColor(Color.WHITE);
         font.draw(batch, "Очки: " + finalScore, 10,  this.game.getGameSession().getLowBorder());
-        font.draw(batch, "Еще раз?  Нажмите ПРОБЕЛ", 10
+        font.draw(batch, "Еще раз?", 10
             , this.game.getGameSession().getLowBorder() - this.game.getGameSession().getHeightSettingsButton());
+        font.draw(batch, "Нажмите ПРОБЕЛ", 10
+            , this.game.getGameSession().getLowBorder() - 2 * this.game.getGameSession().getHeightSettingsButton());
+
         batch.end();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) { game.setScreen(game.getMenu()); }
