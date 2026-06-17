@@ -82,4 +82,12 @@ public class Brick {
     public void setCount(int count) { this.count = count; }
 
     public int getMaxCount() { return maxCount;  }
+    public float getY() {
+        Vector2 position = body.getPosition();
+        return position.y;
+    }
+    public float getX() {
+        Vector2 position = body.getPosition();
+        return position.x;
+    }
 }

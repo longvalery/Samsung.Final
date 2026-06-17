@@ -12,7 +12,7 @@ public class GameResources {
     public static final String BALL_PATH = "textures/ball.png";
     public static final String BUTTON_PATH = "textures/button_background_long_brown.png";
     public static final String  TOP_IMAGE_PATH = "textures/blackout_top.png";
-
+    public static final String  BONBON_IMAGE_PATH = "textures/bonbon.png";
     public static final String WINNER_PATH = "icons/winner.png";
     public static final String LOSER_PATH = "icons/loser.png";
 

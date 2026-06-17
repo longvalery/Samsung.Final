@@ -4,5 +4,7 @@ public enum ObjectType {
     BRICK,
     BALL,
     PADDLE,
-    WALL
+    WALL,
+    BONBON,
+    BOMB
 }

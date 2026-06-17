@@ -26,6 +26,7 @@ public class GameSession {
     private int score;
     private int lives;
     private Main game;
+    private int bonbonSize, bonbonVelocity;
 
     public GameSession(Main game) {
         this.game = game;
@@ -48,6 +49,8 @@ public class GameSession {
         this.ballHeight = this.ballWidth;
         this.paddleWidth = (int) (0.2 * screenWidth);
         this.paddleHeight = this.paddleWidth / 5;
+        this.bonbonSize = (int) (0.8 * this.ballWidth);
+        this.bonbonVelocity = (int) (0.8 * this.ballVelocity);
         calcTablesSizes();
     }
 
@@ -268,9 +271,9 @@ public class GameSession {
         return ballWidth;
     }
 
-    public int getBallHeight() {
-        return ballHeight;
-    }
+    public int getBallHeight() { return ballHeight; }
+
+    public int getBonbonSize() { return bonbonSize; }
 
     public int getSmallFontSize() {
         return smallFontSize;
@@ -292,5 +295,6 @@ public class GameSession {
 
     public int getTableColumn2Width() { return tableColumn2Width; }
 
+    public int getBonbonVelocity() { return bonbonVelocity; }
     public int getTableColumn3Width() { return tableColumn3Width; }
 }

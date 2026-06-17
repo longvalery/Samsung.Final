@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
@@ -15,6 +16,7 @@ import java.util.Random;
 
 import rva.com.Main;
 import rva.com.components.Ball;
+import rva.com.components.BonBon;
 import rva.com.components.Brick;
 import rva.com.components.Paddle;
 import rva.com.components.Wall;
@@ -40,6 +42,7 @@ public class GamePlayScreen extends BaseScreen {
     private Array<ImageView> lives;
     private float yLine;
     private GlyphLayout layout;
+    private Array<BonBon> bonbons;
 
 
 
@@ -61,10 +64,12 @@ public class GamePlayScreen extends BaseScreen {
         this.layout = new GlyphLayout();
         this.layout.setText(this.font, "Очки: 100");
         this.yLine = this.topBlackoutView.getY() + (this.topBlackoutView.getHeight() + this.layout.height) / 2;
+
+        this.bonbons = new Array<BonBon>();
+
         world.setContactListener(new GameContactListener(this));
 
     }
-
     private void createDemoLives() {
         this.lives = new Array<>();
         for (int i=0; i < this.gameSession.getLives(); i++) {
@@ -77,17 +82,13 @@ public class GamePlayScreen extends BaseScreen {
             this.lives.add(image);
         }
     }
-
     private void createPaddle() {
         paddle = new Paddle(world, Gdx.graphics.getWidth() / 2, 30, this);
     }
-
     public AudioManager getAudio() {  return game.getAudioManager(); }
-
     private void createBall() {
         ball = new Ball(world, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, this);
     }
-
     private void createWalls() {
         walls = new Array<>();
         // Левая стена
@@ -97,8 +98,6 @@ public class GamePlayScreen extends BaseScreen {
         // Правая стена
         walls.add(new Wall(world, Gdx.graphics.getWidth() - 1, 0, 1, Gdx.graphics.getHeight(), "right"));
     }
-
-
     private void createBricks() {
         this.bricks = new Array<>();
         int brickWidth = this.gameSession.getBrickWidth();
@@ -120,7 +119,6 @@ public class GamePlayScreen extends BaseScreen {
     public void show() {
         this.gameSession.resetGame(); // Сброс состояния игры
         this.ball.reset();
-
     }
 
     @Override
@@ -160,6 +158,7 @@ public class GamePlayScreen extends BaseScreen {
         this.ball.draw(batch);
         for (Brick brick: this.bricks) { brick.draw(batch);}
         for (int i=0; i < this.gameSession.getLives(); i++) { this.lives.get(i).draw(batch); }
+        for (BonBon bonbon : this.bonbons) { bonbon.draw(batch); }
         batch.end();
 
 
@@ -174,7 +173,15 @@ public class GamePlayScreen extends BaseScreen {
     private void updateGameLogic(float delta) {
         // Обновление позиций объектов, проверка столкновений и т. д.
         gameSession.update(delta);
+        for (BonBon bonbon : this.bonbons) {
+            bonbon.update(delta);
+            if ((bonbon.getY() < 0) || bonbon.isNeedDestroy()) {
+                if (bonbon.isNeedDestroy()) { this.gameSession.setScore(this.gameSession.getScore() + 100);}
+                this.bonbons.removeValue(bonbon, true);
+                bonbon.dispose();
 
+            }
+        }
     }
 
     private void checkGameEndConditions() {
@@ -232,6 +239,8 @@ public class GamePlayScreen extends BaseScreen {
 
     }
 
+    public World getWorld() { return world; }
+
     @Override
     public void update(float delta) {
 //        Ускорить игру: увеличьте delta (например, delta * 2.0f).
@@ -247,6 +256,9 @@ public class GamePlayScreen extends BaseScreen {
             // Удаляем разрушенные кирпичи
             for (int i = bricks.size - 1; i >= 0; i--) {
                 if (bricks.get(i).isDestroyed()) {
+                    if (bricks.get(i).getType() == 8) {
+                        this.bonbons.add(new BonBon(bricks.get(i).getX(),bricks.get(i).getY(), game));
+                    }
                     world.destroyBody(bricks.get(i).getBody());
                     bricks.removeIndex(i);
                 }
@@ -274,6 +286,16 @@ public class GamePlayScreen extends BaseScreen {
         return bricks;
     }
 
+    public BonBon getBonBon(Body body) {
+        BonBon result = null;
+        for (BonBon bonbon: this.bonbons) {
+            if (bonbon.getBody() == body) {
+                result = bonbon;
+                break;
+            }
+        }
+        return result;
+    }
     @Override
     public void dispose() {
         // Освобождение игровых ресурсов

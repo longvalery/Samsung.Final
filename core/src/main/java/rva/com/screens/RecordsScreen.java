@@ -30,7 +30,7 @@ public class RecordsScreen extends BaseScreen {
         this.skin = createSimpleSkin();
         this.stage = new Stage(new FitViewport(game.getGameSession().getScreenWidth()
             , game.getGameSession().getScreenHeight(), camera));
-        createUI();
+
     }
 
     private Skin createSimpleSkin() {
@@ -152,6 +152,7 @@ public class RecordsScreen extends BaseScreen {
             stage.unfocusAll(); // снимает фокус со всех актёров
             stage.getRoot().clearActions(); // отменяет все анимации/действия
         }
+        stage.clear();
 
     }
 
