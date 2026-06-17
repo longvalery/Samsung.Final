@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import rva.com.Main;
 import rva.com.managers.InputManager;
 import rva.com.services.GameResources;
+import rva.com.services.GameSettings;
 
 public class GameOverScreen extends BaseScreen {
     private int finalScore;
@@ -37,16 +38,22 @@ public class GameOverScreen extends BaseScreen {
         loserSprite = new Sprite(loserTexture);
         positionSprites(game.getGameSession().getScreenWidth(), game.getGameSession().getScreenHeight());
         this.inputManager = new InputManager(game);
-        Gdx.input.setInputProcessor(inputManager);
+
     }
 
 
     @Override
-    public void show() { System.out.println("Game Over Screen shown. Score: " + finalScore); }
+    public void show() {
+        System.out.println("Game Over Screen shown. Score: " + finalScore);
+        Gdx.input.setInputProcessor(inputManager);
+    }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.78f, 0.43f, 0.03f, 1);
+        Gdx.gl.glClearColor(GameSettings.BACKGROUND_COLOR.r
+                           ,GameSettings.BACKGROUND_COLOR.g
+                           ,GameSettings.BACKGROUND_COLOR.b
+                           ,GameSettings.BACKGROUND_COLOR.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
@@ -95,7 +102,7 @@ public class GameOverScreen extends BaseScreen {
 
     @Override
     public void hide() {
-
+        Gdx.input.setInputProcessor(null);
     }
 
     @Override

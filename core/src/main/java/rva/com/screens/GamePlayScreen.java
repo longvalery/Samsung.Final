@@ -4,8 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
@@ -36,6 +38,8 @@ public class GamePlayScreen extends BaseScreen {
     private float accumulator = 0f;
     private ImageView topBlackoutView;
     private Array<ImageView> lives;
+    private float yLine;
+    private GlyphLayout layout;
 
 
 
@@ -54,6 +58,9 @@ public class GamePlayScreen extends BaseScreen {
         this.topBlackoutView = new ImageView(0, this.gameSession.getScreenHeight(),  GameResources.TOP_IMAGE_PATH);
         this.topBlackoutView.setY(this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight());
         createDemoLives();
+        this.layout = new GlyphLayout();
+        this.layout.setText(this.font, "Очки: 100");
+        this.yLine = this.topBlackoutView.getY() + (this.topBlackoutView.getHeight() + this.layout.height) / 2;
         world.setContactListener(new GameContactListener(this));
 
     }
@@ -62,7 +69,8 @@ public class GamePlayScreen extends BaseScreen {
         this.lives = new Array<>();
         for (int i=0; i < this.gameSession.getLives(); i++) {
             ImageView image = new ImageView(this.gameSession.getScreenWidth() / 2 + i * 10
-                , this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight() / 2,  GameResources.BALL_PATH);
+                , this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight() / 2 - this.gameSession.getBallHeight() / 2
+                ,  GameResources.BALL_PATH);
             image.setWidth(this.gameSession.getBallWidth());
             image.setHeight(this.gameSession.getBallHeight());
             image.getSprite().setSize(this.gameSession.getBallWidth(), this.gameSession.getBallHeight());
@@ -112,6 +120,7 @@ public class GamePlayScreen extends BaseScreen {
     public void show() {
         this.gameSession.resetGame(); // Сброс состояния игры
         this.ball.reset();
+
     }
 
     @Override
@@ -123,7 +132,11 @@ public class GamePlayScreen extends BaseScreen {
     }
 
     private void drawGameElements() {
-        Gdx.gl.glClearColor(0.78f, 0.43f, 0.03f, 1);
+//        Gdx.gl.glClearColor(0.78f, 0.43f, 0.03f, 1);
+        Gdx.gl.glClearColor(GameSettings.BACKGROUND_COLOR.r
+            ,GameSettings.BACKGROUND_COLOR.g
+            ,GameSettings.BACKGROUND_COLOR.b
+            ,GameSettings.BACKGROUND_COLOR.a);
 //        Gdx.gl.glClearColor(0.7f, 0.7f, 0.7f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -139,8 +152,8 @@ public class GamePlayScreen extends BaseScreen {
         // Отрисовка текста через SpriteBatch
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        this.topBlackoutView.draw(batch);
-        font.draw(batch, "Очки: " + gameSession.getScore(), 20, gameSession.getScreenHeight() - 20);
+        this.topBlackoutView.drawTexture(batch);
+        font.draw(batch, "Очки: " + gameSession.getScore(), gameSession.getxSettingsButton(), this.yLine);
 //        font.draw(batch, "Lives: " + gameSession.getLives(), 20, gameSession.getScreenHeight() - 50);
         // font.draw(batch, "Жизни: " + gameSession.getLives(), gameSession.getScreenWidth() - 150, gameSession.getScreenHeight() - 20);
         this.paddle.draw(batch);
@@ -166,16 +179,17 @@ public class GamePlayScreen extends BaseScreen {
 
     private void checkGameEndConditions() {
         if (gameSession.isGameOver()) {
-//            game.setScreen(new GameOverScreen(game, gameSession.getScore()));
             game.getFinish().setFinalScore(this.gameSession.getScore());
             game.getFinish().setMessage("Проигрыш");
             game.getFinish().setVictory(false);
+            if (this.gameSession.getScore() > 0) { game.getRecordsTable().addResult(this.gameSession.getScore()); }
             game.setScreen(game.getFinish());
         }
         else if (this.bricks.size == 0) {
             game.getFinish().setFinalScore(this.gameSession.getScore());
             game.getFinish().setMessage("Победа");
             game.getFinish().setVictory(true);
+            if (this.gameSession.getScore() > 0) { game.getRecordsTable().addResult(this.gameSession.getScore()); }
             game.setScreen(game.getFinish());
         }
 

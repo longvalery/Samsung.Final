@@ -24,6 +24,10 @@ public class ImageView extends View{
 //        batch.draw(getTexture(), this.getX(), this.getY());
     }
 
+    public void drawTexture(SpriteBatch batch) {
+       batch.draw(getTexture(), this.getX(), this.getY());
+    }
+
     public Sprite getSprite() {
         return sprite;
     }

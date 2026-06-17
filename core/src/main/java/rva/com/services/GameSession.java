@@ -3,13 +3,14 @@ package rva.com.services;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 
+import rva.com.Main;
 import rva.com.managers.MemoryManager;
 
 public class GameSession {
     private int screenWidth, screenHeight;
     private int paddleLevel, lowBorder, highBorder;
     private int brickWidth, brickHeight;
-    private int mainFontSize, titleFontSize;
+    private int mainFontSize, titleFontSize, smallFontSize;
     private int titleLine, menuLine;
     private int paddleVelocity, paddleWidth, paddleHeight;
     private int ballVelocity, ballWidth, ballHeight;
@@ -20,18 +21,14 @@ public class GameSession {
         , minLineSettingsButton, maxLineSettingsButton
         , xSettingsButton, deltaSettingsButton;
 
-    boolean musicFlag, soundFlag;
     private int score;
     private int lives;
-    public GameSession() {
-        musicFlag = true;
-        soundFlag = true;
+    private Main game;
+
+    public GameSession(Main game) {
+        this.game = game;
         this.paddleVelocity = 10;
-        this.paddleWidth = 100;
-        this.paddleHeight = 20;
         this.ballVelocity = 500;
-        this.ballWidth = 30;
-        this.ballHeight = this.ballWidth;
     }
 
     public void calcSizes(int bricksLine, int bricksInLine) {
@@ -41,6 +38,7 @@ public class GameSession {
         this.brickWidth = (int) (screenWidth / bricksInLine);
         this.brickHeight = (int) ((this.highBorder - this.lowBorder) / bricksLine);
         this.mainFontSize = (int) this.screenHeight / 20;
+        this.smallFontSize = (int) (0.7 * this.mainFontSize);
         this.titleFontSize = (int) this.screenHeight / 18;
         this.titleLine = (int) this.screenHeight - this.titleFontSize;
         this.menuLine = (int) this.screenHeight / 2;
@@ -90,6 +88,8 @@ public class GameSession {
     public void endGame() {
         MemoryManager.saveMusicVolume(this.getMusicVolume());
         MemoryManager.saveSoundVolume(this.getSoundVolume());
+//        if (this.score > 0) { game.getRecordsTable().addResult(this.score); }
+        MemoryManager.saveTableOfRecords(game.getRecordsTable().toJson());
     }
     public int getPaddleVelocity() {
         return paddleVelocity;
@@ -160,6 +160,8 @@ public class GameSession {
     }
 
     public void resetGame() {
+        this.score = 0;
+        this.lives = 3;
     }
 
     public int getScore() {
@@ -225,21 +227,6 @@ public class GameSession {
         return deltaSettingsButton;
     }
 
-    public boolean isMusicFlag() {
-        return musicFlag;
-    }
-
-    public void setMusicFlag(boolean musicFlag) {
-        this.musicFlag = musicFlag;
-    }
-
-    public boolean isSoundFlag() {
-        return soundFlag;
-    }
-
-    public void setSoundFlag(boolean soundFlag) {
-        this.soundFlag = soundFlag;
-    }
 
     public boolean isLevelCompleted() {
         return true; // !!!
@@ -271,6 +258,10 @@ public class GameSession {
 
     public int getBallHeight() {
         return ballHeight;
+    }
+
+    public int getSmallFontSize() {
+        return smallFontSize;
     }
 
     public float getMusicVolume() { return musicVolume; }

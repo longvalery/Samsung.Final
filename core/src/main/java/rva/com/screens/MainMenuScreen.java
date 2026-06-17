@@ -116,6 +116,7 @@ public class MainMenuScreen extends BaseScreen {
                                                             }
             switch (index) {
                 case 0:
+
                     game.setScreen(game.getGame());
                     break;
                 case 1:
@@ -166,6 +167,7 @@ public class MainMenuScreen extends BaseScreen {
 
     @Override
     public void hide() {
+        Gdx.input.setInputProcessor(null);
 
     }
 

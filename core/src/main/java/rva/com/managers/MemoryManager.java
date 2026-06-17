@@ -24,20 +24,15 @@ public class MemoryManager {
         return preferences.getFloat("Music");
     }
 
-    public static void saveTableOfRecords(ArrayList<Integer> table) {
-        Json json = new Json();
-        String tableInString = json.toJson(table);
-        preferences.putString("recordTable", tableInString);
+    public static void saveTableOfRecords(String data) {
+        preferences.putString("recordTable", data);
         preferences.flush();
     }
 
-    public static ArrayList<Integer> loadRecordsTable() {
+    public static String loadRecordsTable() {
         if (!preferences.contains("recordTable")){ return null; }
-
         String scores = preferences.getString("recordTable");
-        Json json = new Json();
-        ArrayList<Integer> table = json.fromJson(ArrayList.class, scores);
-        return table;
+        return scores;
     }
 
 }

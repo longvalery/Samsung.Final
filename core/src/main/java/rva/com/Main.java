@@ -20,10 +20,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import rva.com.managers.AudioManager;
 import rva.com.managers.MemoryManager;
+import rva.com.managers.RecordsTableManager;
 import rva.com.screens.BaseScreen;
 import rva.com.screens.GameOverScreen;
 import rva.com.screens.GamePlayScreen;
 import rva.com.screens.MainMenuScreen;
+import rva.com.screens.RecordsScreen;
 import rva.com.screens.SettingsScreen;
 import rva.com.services.FontBuilder;
 import rva.com.services.GameResources;
@@ -35,7 +37,7 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private String osName;
-    private BitmapFont font, whiteFont, yellowFont, titleFont, litleFont;
+    private BitmapFont font, whiteFont, yellowFont, titleFont, litleFont, smallWhiteFont;
     GameSession gameSession;
     ShapeRenderer shapeRenderer;
 
@@ -47,12 +49,13 @@ public class Main extends ApplicationAdapter {
     private GlyphLayout layout;
     private ShaderProgram shader;
     private FontBuilder.FontWithShader fontWithShader;
-
+    private RecordsTableManager recordsTable;
     private AudioManager audioManager;
+    private RecordsScreen records;
 
     @Override
     public void create() {
-        this.gameSession = new GameSession();
+        this.gameSession = new GameSession(this);
         Gdx.graphics.setTitle(GAME_NAME);
         // Определяем операционную систему
         osName = this.gameSession.detectOperatingSystem();
@@ -80,6 +83,7 @@ public class Main extends ApplicationAdapter {
         this.font = FontBuilder.generate(this.gameSession.getMainFontSize(), Color.BLACK,  GameResources.MAIN_FONT_PATH);
         this.litleFont = FontBuilder.generate(10, Color.BLACK,  GameResources.MAIN_FONT_PATH);
         this.whiteFont = FontBuilder.generate(this.gameSession.getMainFontSize(), Color.WHITE,  GameResources.MAIN_FONT_PATH);
+        this.smallWhiteFont = FontBuilder.generate(this.gameSession.getSmallFontSize(), Color.WHITE,  GameResources.MAIN_FONT_PATH);
         this.yellowFont = FontBuilder.generate(this.gameSession.getMainFontSize(), Color.YELLOW,  GameResources.MAIN_FONT_PATH);
 //        this.titleFont = FontBuilder.generate(this.gameSession.getTitleFontSize(), Color.BLACK,  GameResources.GOTHIC_FONT_PATH);
 //        this.shader =  generateShader(this.gameSession.getTitleFontSize(), GameResources.GOTHIC_FONT_PATH);
@@ -96,15 +100,30 @@ public class Main extends ApplicationAdapter {
 
         this.layout = new GlyphLayout();
         this.audioManager = new AudioManager();
-
         gameSession.setMusicVolume(MemoryManager.loadMusicVolume());
+        this.audioManager.getBackgroundMusic().setVolume(MemoryManager.loadMusicVolume());
         gameSession.setSoundVolume(MemoryManager.loadSoundVolume());
+
+        String data = MemoryManager.loadRecordsTable();
+//        this.recordsTable = new RecordsTableManager(GameSettings.MAX_RECORDS);
+        if ((data == null) || (data.length() == 0)) { this.recordsTable = new RecordsTableManager(GameSettings.MAX_RECORDS);}
+        else { this.recordsTable = new RecordsTableManager(GameSettings.MAX_RECORDS, data); }
+
+        this.records = new RecordsScreen(this);
+
         this.setScreen(this.getMenu());
 //        System.out.println("Line: " + "0 " + this.gameSession.getPaddleLevel() + " " + this.gameSession.getScreenWidth() + " " + this.gameSession.getPaddleLevel());
     }
 
 
+
+
     public void setScreen(BaseScreen screen) {
+        // Сбрасываем состояние клавиатуры
+        Gdx.input.justTouched(); // сбрасывает флаг касания
+        Gdx.input.setOnscreenKeyboardVisible(false);
+        Gdx.input.setInputProcessor(null);
+
         if (this.screen != null) { this.screen.hide(); }
         this.screen = screen;
         this.screen.show();
@@ -115,9 +134,10 @@ public class Main extends ApplicationAdapter {
     }
 
     private void draw() {
-        ScreenUtils.clear(0.55f, 0.55f, 0.55f, 0.5f);
+
 
 /*
+       ScreenUtils.clear(0.55f, 0.55f, 0.55f, 0.5f);
         batch.begin();
 
         batch.end();
@@ -189,6 +209,8 @@ public class Main extends ApplicationAdapter {
         return game;
     }
 
+    public RecordsScreen getRecords() { return records; }
+
     public GameOverScreen getFinish() {
         return finish;
     }
@@ -205,9 +227,7 @@ public class Main extends ApplicationAdapter {
         return screen;
     }
 
-    public SettingsScreen getSettings() {
-        return settings;
-    }
+    public SettingsScreen getSettings() { return settings; }
 
     public BitmapFont getTitleFont() {
         return titleFont;
@@ -231,6 +251,10 @@ public class Main extends ApplicationAdapter {
 
     public AudioManager getAudioManager() { return audioManager; }
 
+    public RecordsTableManager getRecordsTable() { return recordsTable; }
+
+    public BitmapFont getSmallWhiteFont() { return smallWhiteFont; }
+
     @Override
     public void dispose() {
         super.dispose();
@@ -247,5 +271,6 @@ public class Main extends ApplicationAdapter {
         this.whiteFont.dispose();
         this.titleFont.dispose();
         this.shader.dispose();
+        this.recordsTable.dispose();
     }
 }

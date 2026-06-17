@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
 import rva.com.Main;
+import rva.com.services.GameSettings;
 import rva.com.uix.ButtonView;
 import rva.com.uix.SliderView;
 import rva.com.uix.SliderViewNice;
@@ -27,8 +28,6 @@ public class SettingsScreen  extends BaseScreen {
         this.buttonArray = new ArrayList<>();
         this.sliderArray = new ArrayList<>();
         this.stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(this.stage);
-
     }
 
     private void createButtons() {
@@ -92,7 +91,7 @@ public class SettingsScreen  extends BaseScreen {
 //                    this.buttonArray.get(1).setText(line);
 //                    break;
                 case 0:
-
+                    this.game.setScreen(this.game.getRecords());
                     break;
                 case 1:
                     this.game.setScreen(this.game.getMenu());
@@ -105,7 +104,11 @@ public class SettingsScreen  extends BaseScreen {
 
     @Override
     public void draw() {
-        Gdx.gl.glClearColor(0.78f, 0.43f, 0.03f, 1);
+//        Gdx.gl.glClearColor(0.78f, 0.43f, 0.03f, 1);
+        Gdx.gl.glClearColor(GameSettings.BACKGROUND_COLOR.r
+            ,GameSettings.BACKGROUND_COLOR.g
+            ,GameSettings.BACKGROUND_COLOR.b
+            ,GameSettings.BACKGROUND_COLOR.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         this.game.getLayout().setText(this.game.getTitleFont(), "НАСТРОЙКИ");
@@ -145,6 +148,7 @@ public class SettingsScreen  extends BaseScreen {
     public void show() {
         this.game.getGameSession().calcSettingsButtonSize(SETTINGS_ITEMS.length);
         this.createButtons();
+        Gdx.input.setInputProcessor(this.stage);
     }
 
     @Override
@@ -166,6 +170,7 @@ public class SettingsScreen  extends BaseScreen {
 
     @Override
     public void hide() {
+        Gdx.input.setInputProcessor(null);
 
     }
 
@@ -179,7 +184,7 @@ public class SettingsScreen  extends BaseScreen {
     public void dispose() {
         for (SliderViewVeryNice slider : this.sliderArray) { slider.dispose();  }
         for( ButtonView button :this.buttonArray) {  button.dispose();  }
-        this.stage.dispose();
+        if (this.stage != null) { this.stage.dispose(); }
     }
 
 }
