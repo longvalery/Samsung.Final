@@ -40,8 +40,17 @@ public class GameContactListener implements ContactListener {
                 if (brick != null) {
                     int score = brick.getType() + 1;
                     this.game.getGameSession().setScore(this.game.getGameSession().getScore() + score);
-                    if (brick.isBroken()) { brick.destroy(); }
-                    else                  { brick.setBroken(true); }
+                    brick.setCount(brick.getCount() - 1);
+                    if (brick.getCount() == 0) {
+                        if (brick.isBroken()) {
+                            brick.destroy();
+
+                        }
+                        else {
+                            brick.setBroken(true);
+                            brick.setCount(brick.getMaxCount());
+                        }
+                    }
                 }
             }
 
@@ -58,30 +67,29 @@ public class GameContactListener implements ContactListener {
                 (typeA.equals("wall") && typeB.equals("ball"))) {
                 Body ballBody = typeA.equals("ball") ? bodyA : bodyB;
                 Vector2 velocity = bodyB.getLinearVelocity();
-                System.out.println(String.format("WALL velocity x: %8.3f, y %8.3f, ABS %8.3f", velocity.x, velocity.y, velocity.len()));
+//                System.out.println(String.format("WALL velocity x: %8.3f, y %8.3f, ABS %8.3f", velocity.x, velocity.y, velocity.len()));
                 Body wall = typeA.equals("wall") ? bodyA : bodyB;
                 Vector2 position = wall.getPosition();
                 if (position.x < 1.0) {
-                    System.out.println("Left");
+//                    System.out.println("Left");
                     velocity.x = - velocity.x;
                     velocity.y = velocity.y;
-
                                       }
                 else if (position.y > (game.getGameSession().getScreenHeight() - 1) ) {
-                    System.out.println("Top");
+//                    System.out.println("Top");
                     velocity.y = - velocity.y;
                     velocity.x = velocity.x;
                                                                                       }
                 else  {
-                    System.out.println("Right");
+//                    System.out.println("Right");
                     velocity.x = - velocity.x;
                     velocity.y = velocity.y;
                       }
                 if (abs(velocity.y) < 5.0f) { velocity.y = - 20.0f; }
-                System.out.println(String.format("WALL velocity x: %8.3f, y %8.3f, ABS %8.3f", velocity.x, velocity.y, velocity.len()));
+//                System.out.println(String.format("WALL velocity x: %8.3f, y %8.3f, ABS %8.3f", velocity.x, velocity.y, velocity.len()));
                 ballBody.setLinearVelocity(velocity);
 
-                System.out.println(String.format("position x: %8.3f, y %8.3f", position.x, position.y));
+//                System.out.println(String.format("position x: %8.3f, y %8.3f", position.x, position.y));
 
 //
             }

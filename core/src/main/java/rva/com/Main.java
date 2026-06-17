@@ -37,7 +37,7 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private String osName;
-    private BitmapFont font, whiteFont, yellowFont, titleFont, litleFont, smallWhiteFont;
+    private BitmapFont font, whiteFont, yellowFont, titleFont, litleFont, smallWhiteFont, smallFont;
     GameSession gameSession;
     ShapeRenderer shapeRenderer;
 
@@ -83,6 +83,7 @@ public class Main extends ApplicationAdapter {
         this.font = FontBuilder.generate(this.gameSession.getMainFontSize(), Color.BLACK,  GameResources.MAIN_FONT_PATH);
         this.litleFont = FontBuilder.generate(10, Color.BLACK,  GameResources.MAIN_FONT_PATH);
         this.whiteFont = FontBuilder.generate(this.gameSession.getMainFontSize(), Color.WHITE,  GameResources.MAIN_FONT_PATH);
+        this.smallFont = FontBuilder.generate(this.gameSession.getSmallFontSize(), Color.BLACK,  GameResources.MAIN_FONT_PATH);
         this.smallWhiteFont = FontBuilder.generate(this.gameSession.getSmallFontSize(), Color.WHITE,  GameResources.MAIN_FONT_PATH);
         this.yellowFont = FontBuilder.generate(this.gameSession.getMainFontSize(), Color.YELLOW,  GameResources.MAIN_FONT_PATH);
 //        this.titleFont = FontBuilder.generate(this.gameSession.getTitleFontSize(), Color.BLACK,  GameResources.GOTHIC_FONT_PATH);
@@ -254,6 +255,8 @@ public class Main extends ApplicationAdapter {
     public RecordsTableManager getRecordsTable() { return recordsTable; }
 
     public BitmapFont getSmallWhiteFont() { return smallWhiteFont; }
+
+    public BitmapFont getSmallFont() { return smallFont;  }
 
     @Override
     public void dispose() {

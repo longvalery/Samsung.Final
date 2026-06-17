@@ -68,7 +68,7 @@ public class GamePlayScreen extends BaseScreen {
     private void createDemoLives() {
         this.lives = new Array<>();
         for (int i=0; i < this.gameSession.getLives(); i++) {
-            ImageView image = new ImageView(this.gameSession.getScreenWidth() / 2 + i * 10
+            ImageView image = new ImageView(this.gameSession.getScreenWidth() * 2 / 3 + i * 10
                 , this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight() / 2 - this.gameSession.getBallHeight() / 2
                 ,  GameResources.BALL_PATH);
             image.setWidth(this.gameSession.getBallWidth());

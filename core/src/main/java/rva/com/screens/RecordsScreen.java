@@ -85,17 +85,17 @@ public class RecordsScreen extends BaseScreen {
         // Заголовки столбцов
         recordsTable.add("МЕСТО").width(120).expandX().pad(5);
         recordsTable.add("ОЧКИ").width(120).expandX().pad(5);
-        recordsTable.add("ВРЕМЯ").width(180).expandX().pad(5).row();
+        recordsTable.add("ДАТА").width(180).expandX().pad(5).row();
 
         // Данные рекордов
         var records = game.getRecordsTable();
         for (int i = 0; i < records.size(); i++) {
             TableRecordItem record = records.get(i);
-            recordsTable.add(String.valueOf(i + 1)).width(80).pad(5);
+            recordsTable.add(String.valueOf(i + 1)).width(120).pad(5);
             recordsTable.add(String.valueOf(record.value())).width(120).pad(5);
             String empty = "";
-            if (record.date() == null) {recordsTable.add(empty).width(200).pad(5).row();}
-            else                       { recordsTable.add(record.date().format(dateFormatter)).width(200).pad(5).row();}
+            if (record.date() == null) {recordsTable.add(empty).width(180).pad(5).row();}
+            else                       { recordsTable.add(record.date().format(dateFormatter)).width(180).pad(5).row();}
         }
 
         mainTable.add(recordsTable).padBottom(30).row();

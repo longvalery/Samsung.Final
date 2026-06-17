@@ -17,7 +17,7 @@ public class GameOverScreen extends BaseScreen {
     private int finalScore;
     private boolean isVictory;
     private String message;
-    BitmapFont font, whiteFont;
+    BitmapFont font, whiteFont, titleFont, titleWhiteFont;
     Main game;
     // Текстуры и спрайты для картинок
     private Texture winnerTexture;
@@ -28,8 +28,10 @@ public class GameOverScreen extends BaseScreen {
 
     public GameOverScreen(Main game) {
         super(game);
-        this.font = game.getFont();
-        this.whiteFont = game.getWhiteFont();
+        this.font = game.getSmallFont();
+        this.whiteFont = game.getSmallWhiteFont();
+        this.titleFont = game.getFont();
+        this.titleWhiteFont = game.getWhiteFont();
         this.game = game;
         this.message = "";
         winnerTexture = new Texture(GameResources.WINNER_PATH);
@@ -62,8 +64,8 @@ public class GameOverScreen extends BaseScreen {
         if (isVictory && winnerSprite != null) { winnerSprite.draw(batch); }
         else if (!isVictory && loserSprite != null) { loserSprite.draw(batch);  }
 //        font.setColor(Color.WHITE);
-        whiteFont.draw(batch, message, this.game.getGameSession().getxSettingsButton() + 1,  this.game.getGameSession().getTitleLine() - 1);
-        font.draw(batch, message, this.game.getGameSession().getxSettingsButton(),  this.game.getGameSession().getTitleLine());
+        titleWhiteFont.draw(batch, message, this.game.getGameSession().getxSettingsButton() + 1,  this.game.getGameSession().getTitleLine() - 1);
+        titleFont.draw(batch, message, this.game.getGameSession().getxSettingsButton(),  this.game.getGameSession().getTitleLine());
 //        font.setColor(Color.WHITE);
         whiteFont.draw(batch, "Очки: " + finalScore, this.game.getGameSession().getxSettingsButton() + 1
             ,this.game.getGameSession().getMinLineSettingsButton() + 4 * this.game.getGameSession().getHeightSettingsButton() - 1);

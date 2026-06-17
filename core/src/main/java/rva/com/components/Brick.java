@@ -24,6 +24,9 @@ public class Brick {
     private int width;
     private int height;
 
+    private int count, maxCount;
+
+
     public Brick(World world, float x, float y, float width, float height, int type, GamePlayScreen game) {
         this.type = type;
         this.game = game;
@@ -54,7 +57,11 @@ public class Brick {
         // перемещаем картинку
         this.sprite.setPosition(originX,  originY);
         this.spriteBroken.setPosition(originX,  originY);
-        body.setUserData("brick");
+        this.body.setUserData("brick");
+        this.count = 1;
+        this.maxCount = 1;
+        if (type == 9) { this.count = 2; this.maxCount = 2;}
+        if (type == 10) { this.count = 3; this.maxCount = 3;}
     }
 
     public void draw(SpriteBatch batch) {
@@ -70,4 +77,9 @@ public class Brick {
     public void setBroken(boolean broken) { this.broken = broken; }
     public Body getBody() { return this.body;  }
     public int getType() { return type; }
+
+    public int getCount() { return count; }
+    public void setCount(int count) { this.count = count; }
+
+    public int getMaxCount() { return maxCount;  }
 }
