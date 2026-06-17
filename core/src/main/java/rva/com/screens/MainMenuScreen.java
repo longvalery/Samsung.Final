@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
@@ -102,7 +103,7 @@ public class MainMenuScreen extends BaseScreen {
 
     @Override
     public void handle() {
-        if (Gdx.input.isTouched()) {
+        if (Gdx.input.justTouched()) {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             Vector3 touch = this.game.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 //            System.out.println(String.format("x: %f, y: %f", touch.x, touch.y));
@@ -116,11 +117,18 @@ public class MainMenuScreen extends BaseScreen {
                                                             }
             switch (index) {
                 case 0:
-
                     game.setScreen(game.getGame());
                     break;
                 case 1:
-                    game.setScreen(game.getSettings());
+                        Timer.schedule(new Timer.Task() {
+                            @Override
+                            public void run() {
+                                // Код, который выполнится через 0.5 секунды
+                                System.out.println("Half second is out !");
+                                game.setScreen(game.getSettings());
+                            }
+                        }, 0.5f); // задержка в секундах
+
                     break;
                 case 2:
                     game.getGameSession().endGame();
