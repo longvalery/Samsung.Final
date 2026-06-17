@@ -15,6 +15,8 @@ public class GameSession {
     private int paddleVelocity, paddleWidth, paddleHeight;
     private int ballVelocity, ballWidth, ballHeight;
 
+    private int tableCellPad, tablePad, tableColumn1Width, tableColumn2Width, tableColumn3Width;
+
     private float musicVolume, soundVolume;
 
     private int widthSettingsButton, heightSettingsButton
@@ -46,8 +48,18 @@ public class GameSession {
         this.ballHeight = this.ballWidth;
         this.paddleWidth = (int) (0.2 * screenWidth);
         this.paddleHeight = this.paddleWidth / 5;
+        calcTablesSizes();
     }
 
+
+    private void calcTablesSizes() {
+        this.tableCellPad = 5;
+        this.tablePad = 4 * this.tableCellPad;
+        int width = (int) ((this.screenWidth - 2 * this.tablePad) / 7);
+        this.tableColumn1Width = 2 * width;
+        this.tableColumn2Width =  2 * width;
+        this.tableColumn3Width = 3 * width;
+    }
     public void calcSettingsButtonSize(int itemSize) {
         this.minLineSettingsButton = (int) (0.03 * this.screenHeight);
         this.maxLineSettingsButton = (int) (0.6 * this.screenHeight);
@@ -271,4 +283,14 @@ public class GameSession {
     public float getSoundVolume() { return soundVolume; }
 
     public void setSoundVolume(float soundVolume) { this.soundVolume = soundVolume;  }
+
+    public int getTableCellPad() { return tableCellPad;  }
+
+    public int getTablePad() { return tablePad; }
+
+    public int getTableColumn1Width() { return tableColumn1Width; }
+
+    public int getTableColumn2Width() { return tableColumn2Width; }
+
+    public int getTableColumn3Width() { return tableColumn3Width; }
 }

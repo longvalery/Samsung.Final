@@ -80,22 +80,22 @@ public class RecordsScreen extends BaseScreen {
         Table recordsTable = new Table();
         recordsTable.setSkin(skin); // устанавливаем скин
 //        recordsTable.setBackground(skin.newDrawable("white", GameSettings.BACKGROUND_COLOR));
-        recordsTable.pad(20);
+        recordsTable.pad(this.game.getGameSession().getTablePad());
 
         // Заголовки столбцов
-        recordsTable.add("МЕСТО").width(120).expandX().pad(5);
-        recordsTable.add("ОЧКИ").width(120).expandX().pad(5);
-        recordsTable.add("ДАТА").width(180).expandX().pad(5).row();
+        recordsTable.add("МЕСТО").width(this.game.getGameSession().getTableColumn1Width()).expandX().pad(this.game.getGameSession().getTableCellPad());
+        recordsTable.add("ОЧКИ").width(this.game.getGameSession().getTableColumn2Width()).expandX().pad(this.game.getGameSession().getTableCellPad());
+        recordsTable.add("ДАТА").width(this.game.getGameSession().getTableColumn3Width()).expandX().pad(this.game.getGameSession().getTableCellPad()).row();
 
         // Данные рекордов
         var records = game.getRecordsTable();
         for (int i = 0; i < records.size(); i++) {
             TableRecordItem record = records.get(i);
-            recordsTable.add(String.valueOf(i + 1)).width(120).pad(5);
-            recordsTable.add(String.valueOf(record.value())).width(120).pad(5);
+            recordsTable.add(String.valueOf(i + 1)).width(this.game.getGameSession().getTableColumn1Width()).pad(this.game.getGameSession().getTableCellPad());
+            recordsTable.add(String.valueOf(record.value())).width(this.game.getGameSession().getTableColumn2Width()).pad(this.game.getGameSession().getTableCellPad());
             String empty = "";
-            if (record.date() == null) {recordsTable.add(empty).width(180).pad(5).row();}
-            else                       { recordsTable.add(record.date().format(dateFormatter)).width(180).pad(5).row();}
+            if (record.date() == null) {recordsTable.add(empty).width(this.game.getGameSession().getTableColumn3Width()).pad(this.game.getGameSession().getTableCellPad()).row();}
+            else                       { recordsTable.add(record.date().format(dateFormatter)).width(this.game.getGameSession().getTableColumn3Width()).pad(this.game.getGameSession().getTableCellPad()).row();}
         }
 
         mainTable.add(recordsTable).padBottom(30).row();
