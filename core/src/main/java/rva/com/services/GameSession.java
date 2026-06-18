@@ -14,6 +14,7 @@ public class GameSession {
     private int titleLine, menuLine;
     private int paddleVelocity, paddleWidth, paddleHeight;
     private int ballVelocity, ballWidth, ballHeight;
+    private int bombHeight, bombWidth;
 
     private int tableCellPad, tablePad, tableColumn1Width, tableColumn2Width, tableColumn3Width;
 
@@ -51,6 +52,8 @@ public class GameSession {
         this.paddleHeight = this.paddleWidth / 5;
         this.bonbonSize = (int) (0.8 * this.ballWidth);
         this.bonbonVelocity = (int) (0.8 * this.ballVelocity);
+        this.bombHeight = 2 * this.ballWidth;
+        this.bombWidth = bombHeight;
         calcTablesSizes();
     }
 
@@ -178,6 +181,10 @@ public class GameSession {
         this.score = 0;
         this.lives = 3;
     }
+
+    public int getBombHeight() { return bombHeight; }
+
+    public int getBombWidth() { return bombWidth; }
 
     public int getScore() {
         return this.score;

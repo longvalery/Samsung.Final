@@ -14,7 +14,7 @@ public class AudioManager {
     public AudioManager() {
         this.backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal(GameResources.BACKGROUND_MUSIC_PATH));
         this.shootSound = Gdx.audio.newSound(Gdx.files.internal(GameResources.SHOOT_SOUND_PATH));
-//        this.explosionSound = Gdx.audio.newSound(Gdx.files.internal(GameResources.DESTROY_SOUND_PATH));
+        this.explosionSound = Gdx.audio.newSound(Gdx.files.internal(GameResources.DESTROY_SOUND_PATH));
         this.backgroundMusic.setVolume(0.07f); // принимает значение от 0 до 1
         this.backgroundMusic.setLooping(true);
         this.backgroundMusic.play();

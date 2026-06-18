@@ -1,5 +1,6 @@
 package rva.com.managers;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rva.com.components.ExplosionParticle;
+import rva.com.services.GameSettings;
 
 public class ExplosionManager {
     private World world;
@@ -21,9 +23,9 @@ public class ExplosionManager {
 
     // Создание взрыва в заданной точке
     public void createExplosion(Vector2 position) {
-        for (int i = 0; i < ExplosionParticle.NUM_PARTICLES; i++) {
+        for (int i = 0; i < GameSettings.NUM_PARTICLES; i++) {
             // Равномерно распределяем частицы по кругу
-            float angle = i * (360f / ExplosionParticle.NUM_PARTICLES) * MathUtils.degreesToRadians;
+            float angle = i * (360f / GameSettings.NUM_PARTICLES) * MathUtils.degreesToRadians;
             particles.add(new ExplosionParticle(world, position, angle));
         }
     }
@@ -36,10 +38,15 @@ public class ExplosionManager {
         if (currentLifetime >= particleLifetime) {
             for (ExplosionParticle particle : particles) {
                 world.destroyBody(particle.getBody());
+                particle.dispose();
             }
             particles.clear();
             currentLifetime = 0f;
         }
+    }
+
+    public void draw (SpriteBatch batch) {
+        for (ExplosionParticle particle : particles) { particle.draw(batch); }
     }
 
 //    // Отрисовка (для отладки)

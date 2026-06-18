@@ -14,4 +14,7 @@ public class GameSettings {
     public static final int MAX_RECORDS = 5;
     public static final float ROTATION = 2f;
 
+    public static final int NUM_PARTICLES = 60; // количество частиц
+    public static final float BLAST_POWER = 150f; // сила взрыва
+
 }

@@ -16,6 +16,7 @@ import java.util.Random;
 
 import rva.com.Main;
 import rva.com.components.Ball;
+import rva.com.components.Bomb;
 import rva.com.components.BonBon;
 import rva.com.components.Brick;
 import rva.com.components.Paddle;
@@ -49,9 +50,13 @@ public class GamePlayScreen extends BaseScreen {
     private CustomerTimer timer;
     private GameState state;
     private ExplosionManager explosionManager;
+    private Array<Bomb> bombs;
+    private Main game;
 
     public GamePlayScreen(Main game) {
         super(game);
+        this.game = game;
+        this.bombs = new Array<>();
         world = new World(new Vector2(0, 0), true); // Без гравитации
         this.shapeRenderer = game.getShapeRenderer();
         this.gameSession = game.getGameSession();
@@ -118,8 +123,8 @@ public class GamePlayScreen extends BaseScreen {
                 random = new Random().nextInt(GameResources.BRICKS.length);
                 float x = col * (brickWidth + spacing);
                 float y = gameSession.getLowBorder() +  row * (brickHeight + spacing);
-                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,random, this, col, row));
-//                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,4, this, col, row));
+//                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,random, this, col, row));
+                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,3, this, col, row));
             }
         }
     }
@@ -139,7 +144,6 @@ public class GamePlayScreen extends BaseScreen {
     }
 
     private void drawGameElements() {
-//        Gdx.gl.glClearColor(0.78f, 0.43f, 0.03f, 1);
         Gdx.gl.glClearColor(GameSettings.BACKGROUND_COLOR.r
             ,GameSettings.BACKGROUND_COLOR.g
             ,GameSettings.BACKGROUND_COLOR.b
@@ -161,13 +165,13 @@ public class GamePlayScreen extends BaseScreen {
         batch.begin();
         this.topBlackoutView.drawTexture(batch);
         font.draw(batch, "Очки: " + gameSession.getScore(), gameSession.getxSettingsButton(), this.yLine);
-//        font.draw(batch, "Lives: " + gameSession.getLives(), 20, gameSession.getScreenHeight() - 50);
-        // font.draw(batch, "Жизни: " + gameSession.getLives(), gameSession.getScreenWidth() - 150, gameSession.getScreenHeight() - 20);
         this.paddle.draw(batch);
         this.ball.draw(batch);
         for (Brick brick: this.bricks) { brick.draw(batch);}
         for (int i=0; i < this.gameSession.getLives(); i++) { this.lives.get(i).draw(batch); }
         for (BonBon bonbon : this.bonbons) { bonbon.draw(batch); }
+        this.explosionManager.draw(batch);
+        for (Bomb bomb: this.bombs) { bomb.draw(batch);}
         batch.end();
 
 
@@ -192,6 +196,21 @@ public class GamePlayScreen extends BaseScreen {
 
             }
         }
+        this.explosionManager.update(delta);
+        for (int i = bombs.size - 1; i >= 0; i--) {
+            bombs.get(i).update();
+            if ((bombs.get(i).getY() < 0)  || bombs.get(i).isNeedDestroy()) {
+                if (bombs.get(i).isNeedDestroy()) {
+                    gameSession.setLives(gameSession.getLives() - 1);
+                    this.getAudio().getExplosionSound().play(gameSession.getSoundVolume());
+                }
+                world.destroyBody(bombs.get(i).getBody());
+                bombs.get(i).dispose();
+                this.bombs.removeIndex(i);
+
+            }
+        }
+
     }
 
     private void checkGameEndConditions() {
@@ -225,29 +244,19 @@ public class GamePlayScreen extends BaseScreen {
     }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() { }
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() { }
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() { }
 
     @Override
-    public void handle() {
-
-    }
+    public void handle() {  }
 
     @Override
-    public void draw() {
-
-    }
+    public void draw() { }
 
     public World getWorld() { return world; }
 
@@ -303,29 +312,25 @@ public class GamePlayScreen extends BaseScreen {
                         this.explosion(bricks.get(i));
                         continue;
                                                       }
+                    if (bricks.get(i).getType() == 3) {
+                        this.bombs.add(new Bomb(bricks.get(i).getX(), bricks.get(i).getY(), this.game));
+                    }
 
                     world.destroyBody(bricks.get(i).getBody());
                     bricks.removeIndex(i);
                 }
             }
-
             if ((ball.getY() < 0) || (ball.getX() < 0) || ball.getX() > gameSession.getScreenWidth()) {
+                world.destroyBody(ball.getBody());
                 ball.dispose();
                 gameSession.setLives(gameSession.getLives() - 1);
                 createBall();
                                                                                                       }
-
         }
-//        delta = delta * 0.2f;
-//        world.step(delta, 10, 8);
-////        world.step(delta, 6, 2);
-////
-
     }
 
     private void explosion(Brick brick) {
-
-        //  explosionManager.createExplosion(new Vector2(touchPos.x, touchPos.y));
+        Vector2 position = new Vector2(brick.getX(), brick.getY());
         int row = brick.getRow();
         int column = brick.getColumn();
         int leftColumm = (column > 0) ? column - 1 : column;
@@ -357,6 +362,9 @@ public class GamePlayScreen extends BaseScreen {
                 bricks.removeIndex(i);
             }
         }
+        this.getAudio().getExplosionSound().play(gameSession.getSoundVolume());
+        this.explosionManager.createExplosion(position);
+
     }
 
     public GameSession getGameSession() {
@@ -377,10 +385,25 @@ public class GamePlayScreen extends BaseScreen {
         }
         return result;
     }
+
+
+
     @Override
     public void dispose() {
         // Освобождение игровых ресурсов
         if (this.topBlackoutView != null) {topBlackoutView.dispose();}
+
+    }
+
+    public Bomb getBomb(Body bombBody) {
+        Bomb result = null;
+        for (Bomb bomb: this.bombs) {
+            if (bomb.getBody() == bombBody) {
+                result = bomb;
+                break;
+            }
+        }
+        return result;
 
     }
 }

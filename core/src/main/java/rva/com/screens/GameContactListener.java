@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
 import rva.com.components.Ball;
+import rva.com.components.Bomb;
 import rva.com.components.BonBon;
 import rva.com.components.Brick;
 import rva.com.components.Wall;
@@ -69,6 +70,14 @@ public class GameContactListener implements ContactListener {
                 Body bonbonBody = typeA.equals("bonbon") ? bodyA : bodyB;
                 BonBon bonbon = game.getBonBon(bonbonBody);
                 if (bonbon != null) { bonbon.setNeedDestroy(true); }
+            }
+            else if ((typeA.equals("paddle") && typeB.equals("bomb")) ||
+                (typeA.equals("bomb") && typeB.equals("paddle"))) {
+                Body bombBody = typeA.equals("bomb") ? bodyA : bodyB;
+                Bomb bomb = game.getBomb(bombBody);
+                if (bomb != null) {
+                    bomb.setNeedDestroy(true);
+                }
             }
             else if ((typeA.equals("ball") && typeB.equals("wall")) ||
                 (typeA.equals("wall") && typeB.equals("ball"))) {
