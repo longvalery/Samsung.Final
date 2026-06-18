@@ -21,6 +21,7 @@ import rva.com.components.Brick;
 import rva.com.components.Paddle;
 import rva.com.components.Wall;
 import rva.com.managers.AudioManager;
+import rva.com.managers.ExplosionManager;
 import rva.com.services.CustomerTimer;
 import rva.com.services.GameResources;
 import rva.com.services.GameSession;
@@ -47,6 +48,7 @@ public class GamePlayScreen extends BaseScreen {
     private Array<BonBon> bonbons;
     private CustomerTimer timer;
     private GameState state;
+    private ExplosionManager explosionManager;
 
     public GamePlayScreen(Main game) {
         super(game);
@@ -73,6 +75,7 @@ public class GamePlayScreen extends BaseScreen {
         this.state = GameState.NOTHING;
 
         world.setContactListener(new GameContactListener(this));
+        this.explosionManager = new ExplosionManager(this.world);
 
     }
     private void createDemoLives() {
@@ -321,6 +324,8 @@ public class GamePlayScreen extends BaseScreen {
     }
 
     private void explosion(Brick brick) {
+
+        //  explosionManager.createExplosion(new Vector2(touchPos.x, touchPos.y));
         int row = brick.getRow();
         int column = brick.getColumn();
         int leftColumm = (column > 0) ? column - 1 : column;
