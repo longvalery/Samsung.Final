@@ -4,6 +4,7 @@ import static rva.com.services.GameResources.BACKGROUND_PATH;
 import static rva.com.services.GameResources.COPYRIGHT;
 import static rva.com.services.GameResources.GAME_NAME;
 import static rva.com.services.GameResources.MENU_ITEMS;
+import static rva.com.services.GameResources.SETTINGS_ITEMS;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 
 import rva.com.Main;
 import rva.com.components.MenuItemDimensions;
+import rva.com.services.GameSettings;
 
 public class MainMenuScreen extends BaseScreen {
     private BitmapFont yellowFont, whiteFont, titleFont, grayFont;
@@ -161,6 +163,9 @@ public class MainMenuScreen extends BaseScreen {
     public void resize(int width, int height) {
         super.resize(width, height);
         this.sprite.setSize(width, height);
+        this.game.getGameSession().calcSizes(GameSettings.BRICKS_LINE, GameSettings.BRICKS_IN_LINE);
+        this.game.getGameSession().calcSettingsButtonSize(SETTINGS_ITEMS.length);
+        this.game.createScreens();
     }
 
     @Override

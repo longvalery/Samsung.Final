@@ -69,6 +69,8 @@ public class GamePlayScreen extends BaseScreen {
 
         this.topBlackoutView = new ImageView(0, this.gameSession.getScreenHeight(),  GameResources.TOP_IMAGE_PATH);
         this.topBlackoutView.setY(this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight());
+        this.topBlackoutView.getSprite().setSize(this.gameSession.getScreenWidth(), this.topBlackoutView.getHeight());
+        this.topBlackoutView.setWidth(this.gameSession.getScreenWidth());
         createDemoLives();
         this.layout = new GlyphLayout();
         this.layout.setText(this.font, "Очки: 100");
@@ -123,8 +125,8 @@ public class GamePlayScreen extends BaseScreen {
                 random = new Random().nextInt(GameResources.BRICKS.length);
                 float x = col * (brickWidth + spacing);
                 float y = gameSession.getLowBorder() +  row * (brickHeight + spacing);
-//                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,random, this, col, row));
-                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,3, this, col, row));
+                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,random, this, col, row));
+//                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,3, this, col, row));
             }
         }
     }
@@ -292,6 +294,7 @@ public class GamePlayScreen extends BaseScreen {
             ball.update();
             // Удаляем разрушенные кирпичи
             for (int i = bricks.size - 1; i >= 0; i--) {
+                if (bricks.get(i) == null) {continue;}
                 if (bricks.get(i).isDestroyed()) {
                     if (bricks.get(i).getType() == 8) { this.bonbons.add(new BonBon(bricks.get(i).getX(),bricks.get(i).getY(), game)); }
                     if ((bricks.get(i).getType() == 7) && (! this.timer.isActive()))  {
@@ -299,7 +302,7 @@ public class GamePlayScreen extends BaseScreen {
                         this.state = GameState.BOOST;
                                                                                       }
                     if ((bricks.get(i).getType() == 6) && (! this.timer.isActive()))  {
-                        this.timer.activate(2 * 60000);
+                        this.timer.activate(60000);
                         this.state = GameState.EXTENDED_PADDLE;
                         this.paddle.setWidth(2 * this.paddle.getWidth());
                     }

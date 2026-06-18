@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class ImageView extends View{
 
     private Sprite sprite;
+    private Texture textute;
 
     public ImageView(float x, float y, String imagePath) {
         super(x, y);
@@ -25,12 +26,15 @@ public class ImageView extends View{
     }
 
     public void drawTexture(SpriteBatch batch) {
-       batch.draw(getTexture(), this.getX(), this.getY());
+//       batch.draw(getTexture(), this.getX(), this.getY());
+        batch.draw(getTexture(), this.getX(), this.getY(), this.getWidth(), this.getHeight());
     }
 
     public Sprite getSprite() {
         return sprite;
     }
+
+
 
     @Override
     public void dispose() {

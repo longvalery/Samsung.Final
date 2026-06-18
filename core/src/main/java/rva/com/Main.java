@@ -93,12 +93,6 @@ public class Main extends ApplicationAdapter {
         this.shader = fontWithShader.shader;
         this.shapeRenderer = new ShapeRenderer();
 
-
-        this.menu = new MainMenuScreen(this);
-        this.game = new GamePlayScreen(this);
-        this.finish = new GameOverScreen(this);
-        this.settings = new SettingsScreen(this);
-
         this.layout = new GlyphLayout();
         this.audioManager = new AudioManager();
         gameSession.setMusicVolume(MemoryManager.loadMusicVolume());
@@ -110,13 +104,21 @@ public class Main extends ApplicationAdapter {
         if ((data == null) || (data.length() == 0)) { this.recordsTable = new RecordsTableManager(GameSettings.MAX_RECORDS);}
         else { this.recordsTable = new RecordsTableManager(GameSettings.MAX_RECORDS, data); }
 
-        this.records = new RecordsScreen(this);
+
+        createScreens();
 
         this.setScreen(this.getMenu());
 //        System.out.println("Line: " + "0 " + this.gameSession.getPaddleLevel() + " " + this.gameSession.getScreenWidth() + " " + this.gameSession.getPaddleLevel());
     }
 
 
+    public void createScreens() {
+        this.menu = new MainMenuScreen(this);
+        this.game = new GamePlayScreen(this);
+        this.finish = new GameOverScreen(this);
+        this.settings = new SettingsScreen(this);
+        this.records = new RecordsScreen(this);
+    }
 
 
     public void setScreen(BaseScreen screen) {
