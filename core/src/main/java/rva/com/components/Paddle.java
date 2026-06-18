@@ -70,9 +70,10 @@ public class Paddle {
 
         // Ограничение движения в пределах экрана
 //        targetX = Math.max(50, Math.min(Gdx.graphics.getWidth() - 50, targetX));
-        targetX = Math.max(this.game.getGameSession().getPaddleWidth() / 2,
-                Math.min(this.game.getGameSession().getScreenWidth() - this.game.getGameSession().getPaddleWidth() / 2, targetX));
-
+//        targetX = Math.max(this.game.getGameSession().getPaddleWidth() / 2,
+//                Math.min(this.game.getGameSession().getScreenWidth() - this.game.getGameSession().getPaddleWidth() / 2, targetX));
+        targetX = Math.max(this.width / 2,
+                Math.min(this.game.getGameSession().getScreenWidth() - this.width / 2, targetX));
         // Плавное движение
         float velocity = (targetX - currentX) *  this.game.getGameSession().getPaddleVelocity();
         body.setLinearVelocity(velocity, 0);
@@ -88,5 +89,22 @@ public class Paddle {
 
     public Sprite getSprite() {
         return sprite;
+    }
+
+    public int getWidth() { return width; }
+
+    public void setWidth(int width) {
+        this.width = width;
+        this.sprite.setSize(width, height);
+        body.destroyFixture(body.getFixtureList().first());
+
+        FixtureDef fixtureDef = new FixtureDef();
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(this.width /2, this.height /2);
+        fixtureDef.shape = shape;
+        fixtureDef.friction = 0.3f;
+        fixtureDef.restitution = 0.8f;
+        body.createFixture(fixtureDef);
+
     }
 }

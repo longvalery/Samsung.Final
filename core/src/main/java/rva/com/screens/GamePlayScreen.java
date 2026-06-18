@@ -21,9 +21,11 @@ import rva.com.components.Brick;
 import rva.com.components.Paddle;
 import rva.com.components.Wall;
 import rva.com.managers.AudioManager;
+import rva.com.services.CustomerTimer;
 import rva.com.services.GameResources;
 import rva.com.services.GameSession;
 import rva.com.services.GameSettings;
+import rva.com.services.GameState;
 import rva.com.uix.ImageView;
 
 public class GamePlayScreen extends BaseScreen {
@@ -43,8 +45,8 @@ public class GamePlayScreen extends BaseScreen {
     private float yLine;
     private GlyphLayout layout;
     private Array<BonBon> bonbons;
-
-
+    private CustomerTimer timer;
+    private GameState state;
 
     public GamePlayScreen(Main game) {
         super(game);
@@ -66,6 +68,9 @@ public class GamePlayScreen extends BaseScreen {
         this.yLine = this.topBlackoutView.getY() + (this.topBlackoutView.getHeight() + this.layout.height) / 2;
 
         this.bonbons = new Array<BonBon>();
+
+        this.timer = new CustomerTimer(20000);  // 20 секунд в миллисекундах
+        this.state = GameState.NOTHING;
 
         world.setContactListener(new GameContactListener(this));
 
@@ -110,7 +115,8 @@ public class GamePlayScreen extends BaseScreen {
                 random = new Random().nextInt(GameResources.BRICKS.length);
                 float x = col * (brickWidth + spacing);
                 float y = gameSession.getLowBorder() +  row * (brickHeight + spacing);
-                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,random, this));
+                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,random, this, col, row));
+//                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,4, this, col, row));
             }
         }
     }
@@ -178,6 +184,7 @@ public class GamePlayScreen extends BaseScreen {
             if ((bonbon.getY() < 0) || bonbon.isNeedDestroy()) {
                 if (bonbon.isNeedDestroy()) { this.gameSession.setScore(this.gameSession.getScore() + 100);}
                 this.bonbons.removeValue(bonbon, true);
+                world.destroyBody(bonbon.getBody());
                 bonbon.dispose();
 
             }
@@ -246,6 +253,24 @@ public class GamePlayScreen extends BaseScreen {
 //        Ускорить игру: увеличьте delta (например, delta * 2.0f).
 //        Замедлить игру: уменьшите delta (например, delta * 0.5f).
 
+//            world.setVelocityThreshold(Float.MAX_VALUE); // Отключаем порог скорости для ускорения
+//            world.step(BOOST_SPEED * delta, 6, 2); // Устанавливаем ускоренный шаг физики
+
+        this.timer.update(delta);
+        if (timer.isActive()) {
+            if (this.state == GameState.BOOST) {
+//                world.setVelocityThreshold(Float.MAX_VALUE); // Отключаем порог скорости для ускорения
+                delta = delta * 1.5f;
+                                               }
+            if (this.state == GameState.SLOW) { delta = delta * 0.5f; }
+        }
+        else {
+            if (this.state != GameState.NOTHING) {
+                this.paddle.setWidth(this.gameSession.getPaddleWidth());
+                                                 }
+            this.state = GameState.NOTHING;
+
+        }
         accumulator += delta;
         float scaledStep = timeStep * timeScale;
         while (accumulator >= scaledStep) {
@@ -256,9 +281,26 @@ public class GamePlayScreen extends BaseScreen {
             // Удаляем разрушенные кирпичи
             for (int i = bricks.size - 1; i >= 0; i--) {
                 if (bricks.get(i).isDestroyed()) {
-                    if (bricks.get(i).getType() == 8) {
-                        this.bonbons.add(new BonBon(bricks.get(i).getX(),bricks.get(i).getY(), game));
+                    if (bricks.get(i).getType() == 8) { this.bonbons.add(new BonBon(bricks.get(i).getX(),bricks.get(i).getY(), game)); }
+                    if ((bricks.get(i).getType() == 7) && (! this.timer.isActive()))  {
+                        this.timer.activate(60000);
+                        this.state = GameState.BOOST;
+                                                                                      }
+                    if ((bricks.get(i).getType() == 6) && (! this.timer.isActive()))  {
+                        this.timer.activate(2 * 60000);
+                        this.state = GameState.EXTENDED_PADDLE;
+                        this.paddle.setWidth(2 * this.paddle.getWidth());
                     }
+                    if ((bricks.get(i).getType() == 5) && (! this.timer.isActive()))  {
+                        this.timer.activate(60000);
+                        this.state = GameState.SLOW;
+                    }
+
+                    if (bricks.get(i).getType() == 4) {
+                        this.explosion(bricks.get(i));
+                        continue;
+                                                      }
+
                     world.destroyBody(bricks.get(i).getBody());
                     bricks.removeIndex(i);
                 }
@@ -276,6 +318,40 @@ public class GamePlayScreen extends BaseScreen {
 ////        world.step(delta, 6, 2);
 ////
 
+    }
+
+    private void explosion(Brick brick) {
+        int row = brick.getRow();
+        int column = brick.getColumn();
+        int leftColumm = (column > 0) ? column - 1 : column;
+        int righColumm = (column < (GameSettings.BRICKS_IN_LINE - 1)) ? column + 1 : column;
+        int lowRow = (row > 0) ? row - 1 : row;
+        int highRow = (row < (GameSettings.BRICKS_LINE - 1)) ? row + 1 : row;
+        for (int i = this.bricks.size - 1; i >= 0; i--) {
+            int current_row = bricks.get(i).getRow();
+            int current_column = bricks.get(i).getColumn();
+            if (
+                ((current_row == lowRow) &&
+                    ((current_column == leftColumm) || (current_column == column) || (current_column == righColumm))
+                )
+             ||
+                ((current_row == row) &&
+                ((current_column == leftColumm)
+                    || (current_column == column)
+                    || (current_column == righColumm))
+               )
+             ||
+                ((current_row == highRow) &&
+                    ((current_column == leftColumm)
+                        || (current_column == column)
+                        || (current_column == righColumm))
+                )
+            )
+            {
+                world.destroyBody(bricks.get(i).getBody());
+                bricks.removeIndex(i);
+            }
+        }
     }
 
     public GameSession getGameSession() {

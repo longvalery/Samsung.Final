@@ -21,15 +21,17 @@ public class Brick {
     private Texture texture, textureBroken;
     private GamePlayScreen game;
     private Sprite sprite, spriteBroken;
-    private int width;
-    private int height;
+    private int width, height;
+    private int column, row;
 
     private int count, maxCount;
 
 
-    public Brick(World world, float x, float y, float width, float height, int type, GamePlayScreen game) {
+    public Brick(World world, float x, float y, float width, float height, int type, GamePlayScreen game, int column, int row) {
         this.type = type;
         this.game = game;
+        this.column = column;
+        this.row = row;
         this.texture = new Texture(GameResources.BRICKS[type]);
         this.textureBroken = new Texture(GameResources.BROKEN_BRICKS[type]);
         BodyDef bodyDef = new BodyDef();
@@ -90,4 +92,7 @@ public class Brick {
         Vector2 position = body.getPosition();
         return position.x;
     }
+
+    public int getColumn() { return column; }
+    public int getRow() { return row; }
 }
