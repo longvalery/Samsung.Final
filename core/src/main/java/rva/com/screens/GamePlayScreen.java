@@ -52,6 +52,7 @@ public class GamePlayScreen extends BaseScreen {
     private ExplosionManager explosionManager;
     private Array<Bomb> bombs;
     private Main game;
+    private String remainder;
 
     public GamePlayScreen(Main game) {
         super(game);
@@ -80,7 +81,7 @@ public class GamePlayScreen extends BaseScreen {
 
         this.timer = new CustomerTimer(20000);  // 20 секунд в миллисекундах
         this.state = GameState.NOTHING;
-
+        this.remainder = "";
         world.setContactListener(new GameContactListener(this));
         this.explosionManager = new ExplosionManager(this.world);
 
@@ -167,6 +168,7 @@ public class GamePlayScreen extends BaseScreen {
         batch.begin();
         this.topBlackoutView.drawTexture(batch);
         font.draw(batch, "Очки: " + gameSession.getScore(), gameSession.getxSettingsButton(), this.yLine);
+        font.draw(batch, this.remainder, gameSession.getScreenWidth() - 4 * font.getXHeight(), this.yLine);
         this.paddle.draw(batch);
         this.ball.draw(batch);
         for (Brick brick: this.bricks) { brick.draw(batch);}
@@ -272,6 +274,7 @@ public class GamePlayScreen extends BaseScreen {
 
         this.timer.update(delta);
         if (timer.isActive()) {
+            this.remainder = String.format("%d", timer.remainder());
             if (this.state == GameState.BOOST) {
 //                world.setVelocityThreshold(Float.MAX_VALUE); // Отключаем порог скорости для ускорения
                 delta = delta * 1.5f;
@@ -279,6 +282,7 @@ public class GamePlayScreen extends BaseScreen {
             if (this.state == GameState.SLOW) { delta = delta * 0.5f; }
         }
         else {
+            this.remainder = "";
             if (this.state != GameState.NOTHING) {
                 this.paddle.setWidth(this.gameSession.getPaddleWidth());
                                                  }

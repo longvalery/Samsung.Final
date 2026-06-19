@@ -31,5 +31,9 @@ public class CustomerTimer {
     public boolean isActive() {  return this.isActive; }
     public void reset() { isActive = false; startTime = 0;  }
 
+    public int  remainder () {
+        return (int) ((this.startTime + this.duration - System.currentTimeMillis()) / 1000);
+    }
+
     public void dispose() { }
 }
