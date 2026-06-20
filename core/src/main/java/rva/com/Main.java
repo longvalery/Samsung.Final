@@ -128,6 +128,11 @@ public class Main extends ApplicationAdapter {
         Gdx.input.setInputProcessor(null);
 
         if (this.screen != null) { this.screen.hide(); }
+        if (screen == this.getGame()) {
+            this.getGame().dispose();
+            this.game = new GamePlayScreen(this);
+            screen = this.game;
+        }
         this.screen = screen;
         this.screen.show();
     }
