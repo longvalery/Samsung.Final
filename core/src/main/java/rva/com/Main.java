@@ -132,9 +132,9 @@ public class Main extends ApplicationAdapter {
         this.screen.show();
     }
 
-    private void update(float delta) {
-         this.screen.update(delta);
-    }
+//    private void update(float delta) {
+//         this.screen.update(delta);
+//    }
 
     private void draw() {
 
@@ -162,7 +162,7 @@ public class Main extends ApplicationAdapter {
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
         this.screen.render(delta);
-        this.update(delta);
+        this.screen.update(delta);
 //        this.draw();
 
     }

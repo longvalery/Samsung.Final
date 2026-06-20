@@ -17,4 +17,9 @@ public class GameSettings {
     public static final int NUM_PARTICLES = 60; // количество частиц
     public static final float BLAST_POWER = 150f; // сила взрыва
 
+    public static final float  TIME_STEP =  1/60f;
+    public static final int VELOCITY_ITERATIONS = 6;
+    public static final int POSITION_ITERATIONS = 2;
+
+    public static final int MAX_SUB_STEPS = 5;
 }

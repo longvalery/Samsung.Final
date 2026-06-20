@@ -95,6 +95,7 @@ public class Ball {
         return position.x;
     }
 
+
     public void dispose() {
         this.texture.dispose();
     }
