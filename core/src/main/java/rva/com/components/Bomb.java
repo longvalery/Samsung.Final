@@ -13,7 +13,7 @@ public class Bomb extends GameObject {
         this.needDestroy = false;
 
         this.getBody().setUserData("bomb");
-        System.out.println("Create Bomb");
+        // System.out.println("Create Bomb");
     }
 
 

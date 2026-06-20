@@ -60,7 +60,7 @@ public class ExplosionParticle {
 
         body.createFixture(fixtureDef);
         circleShape.dispose();
-        System.out.println("Create ExplosionParticle");
+       //  System.out.println("Create ExplosionParticle");
     }
 
     public Body getBody() {

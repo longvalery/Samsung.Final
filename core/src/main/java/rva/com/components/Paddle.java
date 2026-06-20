@@ -16,7 +16,7 @@ public class Paddle extends GameObject{
             0.0f, 0.0f, 0.0f, true, GameResources.PADDLE_PATH, game);
 
         getBody().setUserData("paddle");
-        System.out.println("Create Paddle");
+      //  System.out.println("Create Paddle");
     }
      @Override
     public void update(float delta) {

@@ -59,7 +59,7 @@ public class Main extends ApplicationAdapter {
         Gdx.graphics.setTitle(GAME_NAME);
         // Определяем операционную систему
         osName = this.gameSession.detectOperatingSystem();
-        System.out.println("Running into: " + osName);
+     //    System.out.println("Running into: " + osName);
         if (this.osName.contains("Windows")) {
             this.gameSession.setScreenWidth(SCREEN_WIDTH);
             this.gameSession.setScreenHeight(SCREEN_HEIGHT);
@@ -70,7 +70,7 @@ public class Main extends ApplicationAdapter {
             this.gameSession.setScreenWidth(Gdx.graphics.getWidth());
             this.gameSession.setScreenHeight(Gdx.graphics.getHeight());
               }
-        System.out.println("Screen sizes: " + this.gameSession.getScreenWidth() + "x" + this.gameSession.getScreenHeight());
+       //  System.out.println("Screen sizes: " + this.gameSession.getScreenWidth() + "x" + this.gameSession.getScreenHeight());
         this.gameSession.calcSizes(GameSettings.BRICKS_LINE, GameSettings.BRICKS_IN_LINE);
         this.gameSession.calcSettingsButtonSize(SETTINGS_ITEMS.length);
         // Создаём камеру с размерами экрана

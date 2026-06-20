@@ -12,7 +12,7 @@ public class Ball extends GameObject{
             false, GameResources.BALL_PATH, game );
 
         this.getBody().setUserData("ball");
-        System.out.println("Create Ball");
+        // System.out.println("Create Ball");
     }
 
     public void reset() {

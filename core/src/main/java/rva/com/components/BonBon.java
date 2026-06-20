@@ -12,7 +12,7 @@ public class BonBon extends GameObject {
              false, GameResources.BONBON_IMAGE_PATH, game );
         this.needDestroy = false;
         this.getBody().setUserData("bonbon");
-        System.out.println("Create BonBon");
+        // System.out.println("Create BonBon");
     }
 
     public void setNeedDestroy(boolean needDestroy) { this.needDestroy = needDestroy; }

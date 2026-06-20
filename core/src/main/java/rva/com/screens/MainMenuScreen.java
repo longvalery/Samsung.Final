@@ -49,7 +49,7 @@ public class MainMenuScreen extends BaseScreen {
     @Override
     public void show() {
         this.selectedItem = 0;
-        System.out.println("Main Menu Screen shown");
+   //     System.out.println("Main Menu Screen shown");
     }
     @Override
     public void draw() {
@@ -126,7 +126,7 @@ public class MainMenuScreen extends BaseScreen {
                             @Override
                             public void run() {
                                 // Код, который выполнится через 0.5 секунды
-                                System.out.println("Half second is out !");
+                               //  System.out.println("Half second is out !");
                                 game.setScreen(game.getSettings());
                             }
                         }, 0.5f); // задержка в секундах

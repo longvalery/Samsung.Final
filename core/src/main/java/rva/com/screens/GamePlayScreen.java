@@ -292,7 +292,7 @@ public class GamePlayScreen extends BaseScreen {
         accumulator += delta;
         float scaledStep = timeStep * timeScale;
         while (accumulator >= scaledStep) {
-            world.step(scaledStep, 6, 2);
+
             accumulator -= scaledStep;
             camera.update();
             updateGameLogic(delta);
@@ -302,7 +302,7 @@ public class GamePlayScreen extends BaseScreen {
             // Удаляем разрушенные кирпичи
             for (int i = bricks.size - 1; i >= 0; i--) {
                 if (bricks.size == 0) { break; }
-                if (i > bricks.size) {continue;}
+                if (i > (bricks.size - 1)) {continue;}
                 if (bricks.get(i) == null) {continue;}
                 if (bricks.get(i).isDestroyed()) {
                     if (bricks.get(i).getType() == 8) { this.bonbons.add(new BonBon(bricks.get(i).getX(),bricks.get(i).getY(), game)); }
@@ -340,12 +340,14 @@ public class GamePlayScreen extends BaseScreen {
                 gameSession.setLives(gameSession.getLives() - 1);
                 createBall();
                                                                                                       }
+            world.step(scaledStep, 6, 2);
         }
     }
 
     private void explosion(Brick brick) {
-        this.getAudio().getExplosionSound().play(gameSession.getSoundVolume());
         Vector2 position = new Vector2(brick.getX(), brick.getY());
+        this.explosionManager.createExplosion(position);
+        this.getAudio().getExplosionSound().play(gameSession.getSoundVolume());
         int row = brick.getRow();
         int column = brick.getColumn();
         int leftColumm = (column > 0) ? column - 1 : column;
@@ -377,7 +379,7 @@ public class GamePlayScreen extends BaseScreen {
                 bricks.removeIndex(i);
             }
         }
-        this.explosionManager.createExplosion(position);
+
     }
 
     public GameSession getGameSession() {
