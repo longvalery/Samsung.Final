@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -28,6 +29,7 @@ import rva.com.services.GameResources;
 import rva.com.services.GameSession;
 import rva.com.services.GameSettings;
 import rva.com.services.GameState;
+import rva.com.uix.IconButtonView;
 import rva.com.uix.ImageView;
 
 public class GamePlayScreen extends BaseScreen {
@@ -52,6 +54,9 @@ public class GamePlayScreen extends BaseScreen {
     private Main game;
     private String remainder;
     private Array<Ball> balls;
+    private int iconSize;
+    private IconButtonView exitButton;
+
 
     public GamePlayScreen(Main game) {
         super(game);
@@ -75,6 +80,12 @@ public class GamePlayScreen extends BaseScreen {
         this.topBlackoutView.getSprite().setSize(this.gameSession.getScreenWidth(), this.topBlackoutView.getHeight());
         this.topBlackoutView.setWidth(this.gameSession.getScreenWidth());
         createDemoLives();
+        this.iconSize = (int) (this.topBlackoutView.getHeight() / 2.0f);
+        this.exitButton = new IconButtonView(
+            this.gameSession.getScreenWidth() * 2.0f / 3.0f - 2 * iconSize
+            , this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight() + iconSize / 2.0f
+            , iconSize, GameResources.ICON_EXIT_PATH);
+
 
         this.layout.setText(this.font, "Очки: 100");
         this.yLine = this.topBlackoutView.getY() + (this.topBlackoutView.getHeight() + this.layout.height) / 2;
@@ -194,6 +205,7 @@ public class GamePlayScreen extends BaseScreen {
         for (BonBon bonbon : this.bonbons) { bonbon.draw(batch); }
         this.explosionManager.draw(batch);
         for (Bomb bomb: this.bombs) { bomb.draw(batch);}
+        this.exitButton.draw(batch);
         batch.end();
 //        shapeRenderer.rect(
 //            gameSession.getPaddleX(),
@@ -233,22 +245,28 @@ public class GamePlayScreen extends BaseScreen {
 
     }
 
-    private void checkGameEndConditions() {
-        if (gameSession.isGameOver()) {
-            this.getAudio().getLose().play(gameSession.getSoundVolume());
-            game.getFinish().setFinalScore(this.gameSession.getScore());
-            game.getFinish().setMessage("Проигрыш");
-            game.getFinish().setVictory(false);
-            if (this.gameSession.getScore() > 0) { game.getRecordsTable().addResult(this.gameSession.getScore()); }
-            game.setScreen(game.getFinish());
-        }
-        else if (this.bricks.size == 0) {
-            this.getAudio().getWin().play(gameSession.getSoundVolume());
-            game.getFinish().setFinalScore(this.gameSession.getScore());
+
+    private void terminate(boolean success) {
+        this.getAudio().getLose().play(gameSession.getSoundVolume());
+        game.getFinish().setFinalScore(this.gameSession.getScore());
+        if (success) {
             game.getFinish().setMessage("Победа");
             game.getFinish().setVictory(true);
-            if (this.gameSession.getScore() > 0) { game.getRecordsTable().addResult(this.gameSession.getScore()); }
-            game.setScreen(game.getFinish());
+                     }
+        else {
+            game.getFinish().setMessage("Проигрыш");
+            game.getFinish().setVictory(false);
+             }
+        if (this.gameSession.getScore() > 0) { game.getRecordsTable().addResult(this.gameSession.getScore()); }
+        game.setScreen(game.getFinish());
+    }
+
+    private void checkGameEndConditions() {
+        if (gameSession.isGameOver()) {
+            this.terminate(false);
+        }
+        else if (this.bricks.size == 0) {
+            this.terminate(true);
         }
 
 //        else if (gameSession.isLevelCompleted()) {
@@ -278,13 +296,12 @@ public class GamePlayScreen extends BaseScreen {
     public void handle() {
         super.handle();
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-            this.getAudio().getLose().play(gameSession.getSoundVolume());
-            game.getFinish().setFinalScore(this.gameSession.getScore());
-            game.getFinish().setMessage("Проигрыш");
-            game.getFinish().setVictory(false);
-            if (this.gameSession.getScore() > 0) { game.getRecordsTable().addResult(this.gameSession.getScore()); }
-            game.setScreen(game.getFinish());
+            this.terminate(false);
         }
+        if (Gdx.input.isTouched()) {
+            Vector3 touch = this.game.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+            if (this.exitButton.isHit(touch.x, touch.y)) { this.terminate(false);}
+                                   }
     }
 
     @Override

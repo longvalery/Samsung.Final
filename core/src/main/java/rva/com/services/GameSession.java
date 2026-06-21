@@ -16,6 +16,7 @@ public class GameSession {
     private int ballVelocity, ballWidth, ballHeight;
     private int bombHeight, bombWidth;
 
+
     private int tableCellPad, tablePad, tableColumn1Width, tableColumn2Width, tableColumn3Width;
 
     private float musicVolume, soundVolume;
