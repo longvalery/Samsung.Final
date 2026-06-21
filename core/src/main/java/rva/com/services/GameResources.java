@@ -22,6 +22,8 @@ public class GameResources {
     public static final String BACKGROUND_MUSIC_PATH = "media/background_music.mp3";
     public static final String DESTROY_SOUND_PATH = "media/explosion.mp3";
     public static final String SHOOT_SOUND_PATH = "media/paddle.mp3";
+    public static final String WIN_SOUND_PATH = "media/win.mp3";
+    public static final String LOSE_SOUND_PATH = "media/lose.mp3";
 
     public static final String GAME_NAME = "Разбей здесь ВСЁ !!!";
     public static final String COPYRIGHT = "(c) RVA, 2026";

@@ -94,7 +94,7 @@ public class Main extends ApplicationAdapter {
         this.shapeRenderer = new ShapeRenderer();
 
         this.layout = new GlyphLayout();
-        this.audioManager = new AudioManager();
+        this.audioManager = new AudioManager(MemoryManager.loadSoundVolume());
         gameSession.setMusicVolume(MemoryManager.loadMusicVolume());
         this.audioManager.getBackgroundMusic().setVolume(MemoryManager.loadMusicVolume());
         gameSession.setSoundVolume(MemoryManager.loadSoundVolume());
@@ -277,5 +277,6 @@ public class Main extends ApplicationAdapter {
         this.titleFont.dispose();
         this.shader.dispose();
         this.recordsTable.dispose();
+        this.audioManager.dispose();
     }
 }

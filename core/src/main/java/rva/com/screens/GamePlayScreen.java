@@ -220,6 +220,7 @@ public class GamePlayScreen extends BaseScreen {
 
     private void checkGameEndConditions() {
         if (gameSession.isGameOver()) {
+            this.getAudio().getLose().play(gameSession.getSoundVolume());
             game.getFinish().setFinalScore(this.gameSession.getScore());
             game.getFinish().setMessage("Проигрыш");
             game.getFinish().setVictory(false);
@@ -227,6 +228,7 @@ public class GamePlayScreen extends BaseScreen {
             game.setScreen(game.getFinish());
         }
         else if (this.bricks.size == 0) {
+            this.getAudio().getWin().play(gameSession.getSoundVolume());
             game.getFinish().setFinalScore(this.gameSession.getScore());
             game.getFinish().setMessage("Победа");
             game.getFinish().setVictory(true);
