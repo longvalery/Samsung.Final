@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -37,7 +36,7 @@ public class GamePlayScreen extends BaseScreen {
     private Array<Wall> walls;
     private World world;
     private Paddle paddle;
-    private Ball ball;
+//    private Ball ball;
     private Array<Brick> bricks;
     private float accumulator = 0f;
     private ImageView topBlackoutView;
@@ -51,11 +50,18 @@ public class GamePlayScreen extends BaseScreen {
     private Array<Bomb> bombs;
     private Main game;
     private String remainder;
+    private Array<Ball> balls;
 
     public GamePlayScreen(Main game) {
         super(game);
         this.game = game;
         this.bombs = new Array<>();
+        this.balls = new Array<>();
+        this.walls = new Array<>();
+        this.bonbons = new Array<>();
+        this.lives = new Array<>();
+        this.bricks = new Array<>();
+        this.layout = new GlyphLayout();
         world = new World(new Vector2(0, 0), true); // Без гравитации
         this.shapeRenderer = game.getShapeRenderer();
         this.gameSession = game.getGameSession();
@@ -69,11 +75,9 @@ public class GamePlayScreen extends BaseScreen {
         this.topBlackoutView.getSprite().setSize(this.gameSession.getScreenWidth(), this.topBlackoutView.getHeight());
         this.topBlackoutView.setWidth(this.gameSession.getScreenWidth());
         createDemoLives();
-        this.layout = new GlyphLayout();
+
         this.layout.setText(this.font, "Очки: 100");
         this.yLine = this.topBlackoutView.getY() + (this.topBlackoutView.getHeight() + this.layout.height) / 2;
-
-        this.bonbons = new Array<BonBon>();
 
         this.timer = new CustomerTimer(20000);  // 20 секунд в миллисекундах
         this.state = GameState.NOTHING;
@@ -84,10 +88,9 @@ public class GamePlayScreen extends BaseScreen {
 
     }
     private void createDemoLives() {
-        this.lives = new Array<>();
         for (int i=0; i < this.gameSession.getLives(); i++) {
-            ImageView image = new ImageView(this.gameSession.getScreenWidth() * 2 / 3 + i * 10
-                , this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight() / 2 - this.gameSession.getBallHeight() / 2
+            ImageView image = new ImageView(this.gameSession.getScreenWidth() * 2.0f / 3.0f + i * 10
+                , this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight() / 2.0f - this.gameSession.getBallHeight() / 2.0f
                 ,  GameResources.BALL_PATH);
             image.setWidth(this.gameSession.getBallWidth());
             image.setHeight(this.gameSession.getBallHeight());
@@ -96,14 +99,13 @@ public class GamePlayScreen extends BaseScreen {
         }
     }
     private void createPaddle() {
-        paddle = new Paddle(this.getWorld(), Gdx.graphics.getWidth() / 2, 30, this);
+        paddle = new Paddle(this.getWorld(), Gdx.graphics.getWidth() / 2.0f, 30, this);
     }
     public AudioManager getAudio() {  return game.getAudioManager(); }
     private void createBall() {
-        ball = new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, this);
+        balls.add(new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this));
     }
     private void createWalls() {
-        walls = new Array<>();
         // Левая стена
         walls.add(new Wall(world, 0, 0, 1, Gdx.graphics.getHeight(), "left"));
         // Верхняя стена
@@ -112,7 +114,7 @@ public class GamePlayScreen extends BaseScreen {
         walls.add(new Wall(world, Gdx.graphics.getWidth() - 1, 0, 1, Gdx.graphics.getHeight(), "right"));
     }
     private void createBricks() {
-        this.bricks = new Array<>();
+
         int brickWidth = this.gameSession.getBrickWidth();
         int brickHeight = this.gameSession.getBrickHeight();
         int spacing = 1;
@@ -124,15 +126,19 @@ public class GamePlayScreen extends BaseScreen {
                 float x = col * (brickWidth + spacing);
                 float y = gameSession.getLowBorder() +  row * (brickHeight + spacing);
                 bricks.add(new Brick(world, x, y, brickWidth, brickHeight,random, this, col, row));
-//                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,4, this, col, row));
+//                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,2, this, col, row));
             }
         }
     }
 
     @Override
     public void show() {
-        if (this.ball == null) { createBall(); }
-        this.ball.reset();
+        if (this.balls != null) {
+            for (Ball ball : this.balls) { ball.dispose();}
+            this.balls.clear();
+            createBall();
+                                }
+        if (this.balls.get(0) != null) { this.balls.get(0).reset(); }
         if (this.paddle == null) { createPaddle(); }
         this.paddle.reset();
         this.timer.reset();
@@ -142,6 +148,7 @@ public class GamePlayScreen extends BaseScreen {
         if (this.bricks != null){
             for (Brick brick : this.bricks) {
                 brick.dispose();
+                this.bricks.removeValue(brick, false);
                                             }
                                 }
         this.createBricks();
@@ -181,7 +188,7 @@ public class GamePlayScreen extends BaseScreen {
         font.draw(batch, "Очки: " + gameSession.getScore(), gameSession.getxSettingsButton(), this.yLine);
         font.draw(batch, this.remainder, gameSession.getScreenWidth() - 4 * font.getXHeight(), this.yLine);
         this.paddle.draw(batch);
-        this.ball.draw(batch);
+        for (Ball ball: this.balls) { ball.draw(batch); }
         for (Brick brick: this.bricks) { brick.draw(batch);}
         for (int i=0; i < this.gameSession.getLives() -1 ; i++) { this.lives.get(i).draw(batch); }
         for (BonBon bonbon : this.bonbons) { bonbon.draw(batch); }
@@ -298,23 +305,26 @@ public class GamePlayScreen extends BaseScreen {
         float scaledStep = GameSettings.TIME_STEP * GameSettings.SCALE;
         while (accumulator >= scaledStep) {
             accumulator -= scaledStep;
-            camera.update();
+            this.camera.update();
             updateGameLogic(delta);
             checkGameEndConditions();
-            paddle.update();
-            ball.update();
+            this.paddle.update();
+            for (Ball ball: this.balls) { ball.update(); }
             // Удаляем разрушенные кирпичи
-            for (int i = bricks.size - 1; i >= 0; i--) {
-                if (bricks.size == 0) { break; }
-                if (i > (bricks.size - 1)) {continue;}
-                if (bricks.get(i) == null) {continue;}
-                if (bricks.get(i).isDestroyed()) {
-                    if (bricks.get(i).getType() == 8) { this.bonbons.add(new BonBon(bricks.get(i).getX(),bricks.get(i).getY(), game)); }
-                    if ((bricks.get(i).getType() == 7) && (! this.timer.isActive()))  {
+            for (int i = this.bricks.size - 1; i >= 0; i--) {
+                if (this.bricks.size == 0) { break; }
+                if (i > (this.bricks.size - 1)) {continue;}
+                if (this.bricks.get(i) == null) {continue;}
+                if (this.bricks.get(i).isDestroyed()) {
+                    if (this.bricks.get(i).getType() == 8) {
+                        this.bonbons.add(new BonBon(this.bricks.get(i).getX()
+                            , this.bricks.get(i).getY(), this.game));
+                                                           }
+                    if ((this.bricks.get(i).getType() == 7) && (! this.timer.isActive()))  {
                         this.timer.activate(30000);
                         this.state = GameState.BOOST;
                                                                                       }
-                    if ((bricks.get(i).getType() == 6) && (! this.timer.isActive()))  {
+                    if ((this.bricks.get(i).getType() == 6) && (! this.timer.isActive()))  {
                         this.timer.activate(60000);
                         this.state = GameState.EXTENDED_PADDLE;
                         this.paddle.setWidth(2 * this.paddle.getWidth());
@@ -331,19 +341,34 @@ public class GamePlayScreen extends BaseScreen {
                     if (bricks.get(i).getType() == 3) {
                         this.bombs.add(new Bomb(bricks.get(i).getX(), bricks.get(i).getY(), this.game));
                     }
+                    if (bricks.get(i).getType() == 2) {
+                        Ball ball = new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this);
+                        ball.getBody().setLinearVelocity(game.getGameSession().getBallVelocity(), game.getGameSession().getBallVelocity());
+                        balls.add(ball);
+                        ball = new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this);
+                        ball.getBody().setLinearVelocity(- game.getGameSession().getBallVelocity(), - game.getGameSession().getBallVelocity());
+                        balls.add(ball);
+                    }
 
                     world.destroyBody(bricks.get(i).getBody());
                     bricks.removeIndex(i);
                 }
             }
-            if ((ball.getY() < 0)
-                   || (ball.getX() < 0 )
-                  || ball.getX() > gameSession.getScreenWidth()) {
-                world.destroyBody(ball.getBody());
-                ball.dispose();
+            for (Ball ball: this.balls) {
+                if ((ball.getY() < 0) || (ball.getX() < 0 )
+                    || (ball.getX() > gameSession.getScreenWidth())) {
+                    this.balls.removeValue(ball, false);
+                    ball.dispose();
+
+                }
+
+            }
+            if (this.balls.size == 0) {
                 gameSession.setLives(gameSession.getLives() - 1);
                 createBall();
-                                                                                                      }
+            }
+
+
             world.step(delta, GameSettings.VELOCITY_ITERATIONS, GameSettings.POSITION_ITERATIONS);
         }
     }

@@ -33,7 +33,7 @@ public class Ball {
         this.height = game.getGameSession().getBallHeight();
         this.width = game.getGameSession().getBallWidth();
         CircleShape shape = new CircleShape();
-        shape.setRadius(game.getGameSession().getBallWidth() / 2); // 8f
+        shape.setRadius(game.getGameSession().getBallWidth() / 2.0f); // 8f
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
@@ -56,10 +56,10 @@ public class Ball {
     public void draw(SpriteBatch batch) {
         Vector2 position = this.body.getPosition();
         float originX, originY;
-        originX = position.x - (this.width / 2);
-        originY = position.y - (this.height / 2);
+        originX = position.x - (this.width / 2.0f);
+        originY = position.y - (this.height / 2.0f);
         // Устанавливаем центр спрайта как точку вращения
-        this.sprite.setOrigin(this.width / 2, this.height / 2);
+        this.sprite.setOrigin(this.width / 2.0f, this.height / 2.0f);
         // перемещаем картинку
         this.sprite.setPosition(originX,  originY);
         this.sprite.draw(batch);
@@ -78,7 +78,7 @@ public class Ball {
     }
 
     public void reset() {
-        body.setTransform(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0);
+        body.setTransform(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, 0f);
         body.setLinearVelocity(game.getGameSession().getBallVelocity(), - game.getGameSession().getBallVelocity());
     }
 
@@ -97,7 +97,8 @@ public class Ball {
 
 
     public void dispose() {
-        this.texture.dispose();
+        this.game.getWorld().destroyBody(this.body);
+        if (this.texture != null) { this.texture.dispose(); }
     }
 
 }
