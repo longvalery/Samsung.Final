@@ -39,8 +39,6 @@ public class GamePlayScreen extends BaseScreen {
     private Paddle paddle;
     private Ball ball;
     private Array<Brick> bricks;
-    private float timeScale = 0.4f; // 1.0f !!
-    private float timeStep = 1/60f;   // базовый шаг
     private float accumulator = 0f;
     private ImageView topBlackoutView;
     private Array<ImageView> lives;
@@ -125,8 +123,8 @@ public class GamePlayScreen extends BaseScreen {
                 random = new Random().nextInt(GameResources.BRICKS.length);
                 float x = col * (brickWidth + spacing);
                 float y = gameSession.getLowBorder() +  row * (brickHeight + spacing);
-//                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,random, this, col, row));
-                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,4, this, col, row));
+                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,random, this, col, row));
+//                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,4, this, col, row));
             }
         }
     }
@@ -157,7 +155,6 @@ public class GamePlayScreen extends BaseScreen {
         // Логика отрисовки игровых элементов
         // Пример: отрисовка платформы
         shapeRenderer.setColor(Color.BLUE);
-        // Отрисовка игровых объектов
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         if (this.state != GameState.NOTHING) {
@@ -167,10 +164,8 @@ public class GamePlayScreen extends BaseScreen {
             shapeRenderer.rect(0, this.topBlackoutView.getY(), this.topBlackoutView.getWidth(), this.topBlackoutView.getHeight());
         }
 
-
-        // Здесь логика отрисовки игрового поля, платформы, мяча, кирпичей
         shapeRenderer.end();
-
+        // Отрисовка игровых объектов
         // Отрисовка текста через SpriteBatch
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -290,9 +285,8 @@ public class GamePlayScreen extends BaseScreen {
             this.state = GameState.NOTHING;
         }
         accumulator += delta;
-        float scaledStep = timeStep * timeScale;
+        float scaledStep = GameSettings.TIME_STEP * GameSettings.SCALE;
         while (accumulator >= scaledStep) {
-
             accumulator -= scaledStep;
             camera.update();
             updateGameLogic(delta);
@@ -340,7 +334,7 @@ public class GamePlayScreen extends BaseScreen {
                 gameSession.setLives(gameSession.getLives() - 1);
                 createBall();
                                                                                                       }
-            world.step(scaledStep, 6, 2);
+            world.step(delta, GameSettings.VELOCITY_ITERATIONS, GameSettings.POSITION_ITERATIONS);
         }
     }
 
