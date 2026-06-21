@@ -53,7 +53,7 @@ public class SettingsScreen  extends BaseScreen {
                     - i * (this.game.getGameSession().getDeltaSettingsButton()
                     + this.game.getGameSession().getHeightSettingsButton())
                     , this.game.getGameSession().getWidthSettingsButton()
-                    , this.game.getGameSession().getHeightSettingsButton() - 20
+                    , this.game.getGameSession().getHeightSettingsButton()
                     , 0.0f, 1.0f, 0.1f
                     , value
                     , name
