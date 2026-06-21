@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import rva.com.screens.GamePlayScreen;
 import rva.com.services.GameResources;
 import rva.com.services.GameSession;
+import rva.com.services.GameSettings;
 
 public class Paddle {
     private Body body;
@@ -92,6 +93,8 @@ public class Paddle {
     }
 
     public int getWidth() { return width; }
+
+    public void reset() { this.setWidth(game.getGameSession().getPaddleWidth());}
 
     public void setWidth(int width) {
         this.width = width;

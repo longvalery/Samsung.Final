@@ -95,4 +95,9 @@ public class Brick {
 
     public int getColumn() { return column; }
     public int getRow() { return row; }
+
+    public void dispose() {
+        this.game.getWorld().destroyBody(this.body);
+        this.texture.dispose();
+    }
 }

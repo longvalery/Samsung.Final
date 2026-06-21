@@ -62,7 +62,7 @@ public class GamePlayScreen extends BaseScreen {
         this.gameSession.setLives(3);
         this.font = game.getFont();
         createWalls();
-        createBricks();
+//        createBricks();
 
         this.topBlackoutView = new ImageView(0, this.gameSession.getScreenHeight(),  GameResources.TOP_IMAGE_PATH);
         this.topBlackoutView.setY(this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight());
@@ -131,12 +131,20 @@ public class GamePlayScreen extends BaseScreen {
 
     @Override
     public void show() {
-        if (this.ball == null) {
-            createBall();
-        }
-        if (this.paddle == null) { createPaddle(); }
-        this.gameSession.resetGame(); // Сброс состояния игры
+        if (this.ball == null) { createBall(); }
         this.ball.reset();
+        if (this.paddle == null) { createPaddle(); }
+        this.paddle.reset();
+        this.timer.reset();
+        this.state = GameState.NOTHING;
+        this.gameSession.resetGame(); // Сброс состояния игры
+
+        if (this.bricks != null){
+            for (Brick brick : this.bricks) {
+                brick.dispose();
+                                            }
+                                }
+        this.createBricks();
     }
 
     @Override
