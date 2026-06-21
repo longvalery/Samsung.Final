@@ -14,13 +14,11 @@ import rva.com.Main;
 import rva.com.services.GameSettings;
 import rva.com.uix.ButtonView;
 import rva.com.uix.SliderView;
-import rva.com.uix.SliderViewNice;
-import rva.com.uix.SliderViewVeryNice;
 
 
 public class SettingsScreen  extends BaseScreen {
     private ArrayList<ButtonView> buttonArray;
-    private ArrayList<SliderViewVeryNice> sliderArray;
+    private ArrayList<SliderView> sliderArray;
     private Stage stage;
 
     public SettingsScreen(Main game) {
@@ -48,7 +46,7 @@ public class SettingsScreen  extends BaseScreen {
             } else {
                 String name = (i == 0) ? "Музыка": "Звук";
                 float value = (i == 0) ? this.game.getGameSession().getMusicVolume(): this.game.getGameSession().getSoundVolume();
-                SliderViewVeryNice slider = new SliderViewVeryNice(this.game.getGameSession().getxSettingsButton()
+                SliderView slider = new SliderView(this.game.getGameSession().getxSettingsButton()
                     , this.game.getGameSession().getMaxLineSettingsButton()
                     - i * (this.game.getGameSession().getDeltaSettingsButton()
                     + this.game.getGameSession().getHeightSettingsButton())
@@ -122,7 +120,7 @@ public class SettingsScreen  extends BaseScreen {
             button.draw(batch);
         }
 
-        for (SliderViewVeryNice slider : this.sliderArray) {
+        for (SliderView slider : this.sliderArray) {
             slider.draw(batch, 1.0f);
         }
 
@@ -182,7 +180,7 @@ public class SettingsScreen  extends BaseScreen {
 
     @Override
     public void dispose() {
-        for (SliderViewVeryNice slider : this.sliderArray) { slider.dispose();  }
+        for (SliderView slider : this.sliderArray) { slider.dispose();  }
         for( ButtonView button :this.buttonArray) {  button.dispose();  }
         if (this.stage != null) { this.stage.dispose(); }
     }

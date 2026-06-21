@@ -11,6 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.time.format.DateTimeFormatter;
@@ -40,6 +43,12 @@ public class RecordsScreen extends BaseScreen {
 
         skin.add("default", this.game.getSmallWhiteFont());
 
+        // Создаём стиль для заголовка
+        Label.LabelStyle titleStyle = new Label.LabelStyle();
+        titleStyle.font = this.game.getTitleFont();
+        titleStyle.fontColor = Color.WHITE;  // можно установить любой цвет
+        skin.add("title", titleStyle);
+
         // Создаём простую текстуру для фона кнопок
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
@@ -55,14 +64,38 @@ public class RecordsScreen extends BaseScreen {
         skin.add("default", labelStyle);
 
         // Стиль для кнопок
+//        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+//        buttonStyle.up = skin.newDrawable("white", Color.GRAY);
+//        buttonStyle.down = skin.newDrawable("white", Color.DARK_GRAY);
+//        buttonStyle.checked = skin.newDrawable("white", Color.BLUE);
+//        buttonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
+//        buttonStyle.font = this.game.getSmallWhiteFont();
+//        buttonStyle.fontColor = Color.BLACK;
+        // Стиль для кнопок с отступом 20px
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.up = skin.newDrawable("white", Color.GRAY);
-        buttonStyle.down = skin.newDrawable("white", Color.DARK_GRAY);
-        buttonStyle.checked = skin.newDrawable("white", Color.BLUE);
-        buttonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
+
+        // Приводим к SpriteDrawable (именно его возвращает newDrawable с цветом)
+        SpriteDrawable grayDrawable = (SpriteDrawable) skin.newDrawable("white", Color.GRAY);
+        grayDrawable.setPadding(10, 20, 10, 20);
+
+        SpriteDrawable darkGrayDrawable = (SpriteDrawable) skin.newDrawable("white", Color.DARK_GRAY);
+        darkGrayDrawable.setPadding(10, 20, 10, 20);
+
+        SpriteDrawable blueDrawable = (SpriteDrawable) skin.newDrawable("white", Color.BLUE);
+        blueDrawable.setPadding(10, 20, 10, 20);
+
+        SpriteDrawable lightGrayDrawable = (SpriteDrawable) skin.newDrawable("white", Color.LIGHT_GRAY);
+        lightGrayDrawable.setPadding(10, 20, 10, 20);
+
+        buttonStyle.up = grayDrawable;
+        buttonStyle.down = darkGrayDrawable;
+        buttonStyle.checked = blueDrawable;
+        buttonStyle.over = lightGrayDrawable;
         buttonStyle.font = this.game.getSmallWhiteFont();
         buttonStyle.fontColor = Color.BLACK;
+
         skin.add("default", buttonStyle);
+
 
         return skin;
     }
@@ -73,7 +106,7 @@ public class RecordsScreen extends BaseScreen {
         stage.addActor(mainTable);
 
         // Заголовок
-        Label title = new Label("ТАБЛИЦА РЕКОРДОВ", skin, "default");
+        Label title = new Label("ТАБЛИЦА РЕКОРДОВ", skin, "title");
         mainTable.add(title).padBottom(50).row();
 
         // Таблица рекордов
