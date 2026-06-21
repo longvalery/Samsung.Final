@@ -1,6 +1,7 @@
 package rva.com.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -68,7 +69,6 @@ public class GamePlayScreen extends BaseScreen {
         this.gameSession.setLives(3);
         this.font = game.getFont();
         createWalls();
-//        createBricks();
 
         this.topBlackoutView = new ImageView(0, this.gameSession.getScreenHeight(),  GameResources.TOP_IMAGE_PATH);
         this.topBlackoutView.setY(this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight());
@@ -125,7 +125,7 @@ public class GamePlayScreen extends BaseScreen {
                 random = new Random().nextInt(GameResources.BRICKS.length);
                 float x = col * (brickWidth + spacing);
                 float y = gameSession.getLowBorder() +  row * (brickHeight + spacing);
-                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,random, this, col, row));
+                bricks.add(new Brick(world, x, y, brickWidth, brickHeight, random, this, col, row));
 //                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,2, this, col, row));
             }
         }
@@ -275,7 +275,17 @@ public class GamePlayScreen extends BaseScreen {
     public void hide() { }
 
     @Override
-    public void handle() {  }
+    public void handle() {
+        super.handle();
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            this.getAudio().getLose().play(gameSession.getSoundVolume());
+            game.getFinish().setFinalScore(this.gameSession.getScore());
+            game.getFinish().setMessage("Проигрыш");
+            game.getFinish().setVictory(false);
+            if (this.gameSession.getScore() > 0) { game.getRecordsTable().addResult(this.gameSession.getScore()); }
+            game.setScreen(game.getFinish());
+        }
+    }
 
     @Override
     public void draw() { }
@@ -288,7 +298,7 @@ public class GamePlayScreen extends BaseScreen {
 //        Ускорить игру: уменьшите delta (например, delta * 0.5f).
 //            world.setVelocityThreshold(Float.MAX_VALUE); // Отключаем порог скорости для ускорения
 //            world.step(BOOST_SPEED * delta, 6, 2); // Устанавливаем ускоренный шаг физики
-
+        this.handle();
         this.timer.update(delta);
         if (timer.isActive()) {
             this.remainder = String.format("%d", timer.remainder());
@@ -411,13 +421,9 @@ public class GamePlayScreen extends BaseScreen {
 
     }
 
-    public GameSession getGameSession() {
-        return gameSession;
-    }
+    public GameSession getGameSession() { return gameSession; }
 
-    public Array<Brick> getBricks() {
-        return bricks;
-    }
+    public Array<Brick> getBricks() { return bricks; }
 
     public BonBon getBonBon(Body body) {
         BonBon result = null;
@@ -429,7 +435,6 @@ public class GamePlayScreen extends BaseScreen {
         }
         return result;
     }
-
 
 
     @Override
