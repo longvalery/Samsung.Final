@@ -247,13 +247,14 @@ public class GamePlayScreen extends BaseScreen {
 
 
     private void terminate(boolean success) {
-        this.getAudio().getLose().play(gameSession.getSoundVolume());
         game.getFinish().setFinalScore(this.gameSession.getScore());
         if (success) {
+            this.getAudio().getWin().play(gameSession.getSoundVolume());
             game.getFinish().setMessage("Победа");
             game.getFinish().setVictory(true);
                      }
         else {
+            this.getAudio().getLose().play(gameSession.getSoundVolume());
             game.getFinish().setMessage("Проигрыш");
             game.getFinish().setVictory(false);
              }
