@@ -10,10 +10,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
-
 import java.util.Random;
-
-import rva.com.services.GameResources;
 import rva.com.services.GameSettings;
 
 public class ExplosionParticle {

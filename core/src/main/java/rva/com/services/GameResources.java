@@ -1,10 +1,5 @@
 package rva.com.services;
 
-import com.badlogic.gdx.graphics.Pixmap;
-
-import java.lang.reflect.Array;
-import java.util.Arrays;
-
 public class GameResources {
     public static final String MAIN_FONT_PATH = "fonts/Roboto-Bold.ttf";
     public static final String TITLE_FONT_PATH = "fonts/impact.ttf";
@@ -18,10 +13,13 @@ public class GameResources {
     public static final String BOMB_PATH = "textures/bomb.png";
     public static final String WINNER_PATH = "icons/winner.png";
     public static final String LOSER_PATH = "icons/loser.png";
+    public static final String ICON_EXIT_PATH = "icons/exit.png";
 
     public static final String BACKGROUND_MUSIC_PATH = "media/background_music.mp3";
     public static final String DESTROY_SOUND_PATH = "media/explosion.mp3";
     public static final String SHOOT_SOUND_PATH = "media/paddle.mp3";
+    public static final String WIN_SOUND_PATH = "media/win.mp3";
+    public static final String LOSE_SOUND_PATH = "media/lose.mp3";
 
     public static final String GAME_NAME = "Разбей здесь ВСЁ !!!";
     public static final String COPYRIGHT = "(c) RVA, 2026";
@@ -63,6 +61,7 @@ public class GameResources {
         , "textures/red_brick_broken.png"
         , "textures/yellow_brick_broken.png"
     };
+
 
 
 }

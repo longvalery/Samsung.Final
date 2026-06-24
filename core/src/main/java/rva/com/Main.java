@@ -94,7 +94,7 @@ public class Main extends ApplicationAdapter {
         this.shapeRenderer = new ShapeRenderer();
 
         this.layout = new GlyphLayout();
-        this.audioManager = new AudioManager();
+        this.audioManager = new AudioManager(MemoryManager.loadSoundVolume());
         gameSession.setMusicVolume(MemoryManager.loadMusicVolume());
         this.audioManager.getBackgroundMusic().setVolume(MemoryManager.loadMusicVolume());
         gameSession.setSoundVolume(MemoryManager.loadSoundVolume());
@@ -137,9 +137,9 @@ public class Main extends ApplicationAdapter {
         this.screen.show();
     }
 
-    private void update(float delta) {
-         this.screen.update(delta);
-    }
+//    private void update(float delta) {
+//         this.screen.update(delta);
+//    }
 
     private void draw() {
 
@@ -167,7 +167,7 @@ public class Main extends ApplicationAdapter {
     public void render() {
         float delta = Gdx.graphics.getDeltaTime();
         this.screen.render(delta);
-        this.update(delta);
+        this.screen.update(delta);
 //        this.draw();
 
     }
@@ -282,5 +282,6 @@ public class Main extends ApplicationAdapter {
         this.titleFont.dispose();
         this.shader.dispose();
         this.recordsTable.dispose();
+        this.audioManager.dispose();
     }
 }

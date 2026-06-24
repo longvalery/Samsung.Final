@@ -1,6 +1,7 @@
 package rva.com.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -28,6 +29,7 @@ import rva.com.services.GameResources;
 import rva.com.services.GameSession;
 import rva.com.services.GameSettings;
 import rva.com.services.GameState;
+import rva.com.uix.IconButtonView;
 import rva.com.uix.ImageView;
 
 public class GamePlayScreen extends BaseScreen {
@@ -37,10 +39,8 @@ public class GamePlayScreen extends BaseScreen {
     private Array<Wall> walls;
     private World world;
     private Paddle paddle;
-    private Ball ball;
+//    private Ball ball;
     private Array<Brick> bricks;
-    private float timeScale = 0.4f; // 1.0f !!
-    private float timeStep = 1/60f;   // базовый шаг
     private float accumulator = 0f;
     private ImageView topBlackoutView;
     private Array<ImageView> lives;
@@ -53,29 +53,42 @@ public class GamePlayScreen extends BaseScreen {
     private Array<Bomb> bombs;
     private Main game;
     private String remainder;
+    private Array<Ball> balls;
+    private int iconSize;
+    private IconButtonView exitButton;
+
 
     public GamePlayScreen(Main game) {
         super(game);
         this.game = game;
         this.bombs = new Array<>();
+        this.balls = new Array<>();
+        this.walls = new Array<>();
+        this.bonbons = new Array<>();
+        this.lives = new Array<>();
+        this.bricks = new Array<>();
+        this.layout = new GlyphLayout();
         world = new World(new Vector2(0, 0), true); // Без гравитации
         this.shapeRenderer = game.getShapeRenderer();
         this.gameSession = game.getGameSession();
         this.gameSession.setLives(3);
         this.font = game.getFont();
         createWalls();
-        createBricks();
 
         this.topBlackoutView = new ImageView(0, this.gameSession.getScreenHeight(),  GameResources.TOP_IMAGE_PATH);
         this.topBlackoutView.setY(this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight());
         this.topBlackoutView.getSprite().setSize(this.gameSession.getScreenWidth(), this.topBlackoutView.getHeight());
         this.topBlackoutView.setWidth(this.gameSession.getScreenWidth());
         createDemoLives();
-        this.layout = new GlyphLayout();
+        this.iconSize = (int) (this.topBlackoutView.getHeight() / 2.0f);
+        this.exitButton = new IconButtonView(
+            this.gameSession.getScreenWidth() * 2.0f / 3.0f - 2 * iconSize
+            , this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight() + iconSize / 2.0f
+            , iconSize, GameResources.ICON_EXIT_PATH);
+
+
         this.layout.setText(this.font, "Очки: 100");
         this.yLine = this.topBlackoutView.getY() + (this.topBlackoutView.getHeight() + this.layout.height) / 2;
-
-        this.bonbons = new Array<BonBon>();
 
         this.timer = new CustomerTimer(20000);  // 20 секунд в миллисекундах
         this.state = GameState.NOTHING;
@@ -86,10 +99,9 @@ public class GamePlayScreen extends BaseScreen {
 
     }
     private void createDemoLives() {
-        this.lives = new Array<>();
         for (int i=0; i < this.gameSession.getLives(); i++) {
-            ImageView image = new ImageView(this.gameSession.getScreenWidth() * 2 / 3 + i * 10
-                , this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight() / 2 - this.gameSession.getBallHeight() / 2
+            ImageView image = new ImageView(this.gameSession.getScreenWidth() * 2.0f / 3.0f + i * 10
+                , this.gameSession.getScreenHeight() - this.topBlackoutView.getHeight() / 2.0f - this.gameSession.getBallHeight() / 2.0f
                 ,  GameResources.BALL_PATH);
             image.setWidth(this.gameSession.getBallWidth());
             image.setHeight(this.gameSession.getBallHeight());
@@ -98,14 +110,13 @@ public class GamePlayScreen extends BaseScreen {
         }
     }
     private void createPaddle() {
-        paddle = new Paddle(Gdx.graphics.getWidth() / 2, 30, this.game);
+        paddle = new Paddle(this.getWorld(), Gdx.graphics.getWidth() / 2.0f, 30, this);
     }
     public AudioManager getAudio() {  return game.getAudioManager(); }
     private void createBall() {
-        ball = new Ball(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, this.game);
+        balls.add(new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this));
     }
     private void createWalls() {
-        walls = new Array<>();
         // Левая стена
         walls.add(new Wall(world, 0, 0, 1, Gdx.graphics.getHeight(), "left"));
         // Верхняя стена
@@ -114,7 +125,7 @@ public class GamePlayScreen extends BaseScreen {
         walls.add(new Wall(world, Gdx.graphics.getWidth() - 1, 0, 1, Gdx.graphics.getHeight(), "right"));
     }
     private void createBricks() {
-        this.bricks = new Array<>();
+
         int brickWidth = this.gameSession.getBrickWidth();
         int brickHeight = this.gameSession.getBrickHeight();
         int spacing = 1;
@@ -125,20 +136,33 @@ public class GamePlayScreen extends BaseScreen {
                 random = new Random().nextInt(GameResources.BRICKS.length);
                 float x = col * (brickWidth + spacing);
                 float y = gameSession.getLowBorder() +  row * (brickHeight + spacing);
-//                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,random, this, col, row));
-                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,4, this, col, row));
+                bricks.add(new Brick(world, x, y, brickWidth, brickHeight, random, this, col, row));
+//                bricks.add(new Brick(world, x, y, brickWidth, brickHeight,2, this, col, row));
             }
         }
     }
 
     @Override
     public void show() {
-        if (this.ball == null) {
+        if (this.balls != null) {
+            for (Ball ball : this.balls) { ball.dispose();}
+            this.balls.clear();
             createBall();
-        }
+                                }
+        if (this.balls.get(0) != null) { this.balls.get(0).reset(); }
         if (this.paddle == null) { createPaddle(); }
+        this.paddle.reset();
+        this.timer.reset();
+        this.state = GameState.NOTHING;
         this.gameSession.resetGame(); // Сброс состояния игры
-        this.ball.reset();
+
+        if (this.bricks != null){
+            for (Brick brick : this.bricks) {
+                brick.dispose();
+                this.bricks.removeValue(brick, false);
+                                            }
+                                }
+        this.createBricks();
     }
 
     @Override
@@ -157,7 +181,6 @@ public class GamePlayScreen extends BaseScreen {
         // Логика отрисовки игровых элементов
         // Пример: отрисовка платформы
         shapeRenderer.setColor(Color.BLUE);
-        // Отрисовка игровых объектов
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         if (this.state != GameState.NOTHING) {
@@ -167,10 +190,8 @@ public class GamePlayScreen extends BaseScreen {
             shapeRenderer.rect(0, this.topBlackoutView.getY(), this.topBlackoutView.getWidth(), this.topBlackoutView.getHeight());
         }
 
-
-        // Здесь логика отрисовки игрового поля, платформы, мяча, кирпичей
         shapeRenderer.end();
-
+        // Отрисовка игровых объектов
         // Отрисовка текста через SpriteBatch
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -178,12 +199,13 @@ public class GamePlayScreen extends BaseScreen {
         font.draw(batch, "Очки: " + gameSession.getScore(), gameSession.getxSettingsButton(), this.yLine);
         font.draw(batch, this.remainder, gameSession.getScreenWidth() - 4 * font.getXHeight(), this.yLine);
         this.paddle.draw(batch);
-        this.ball.draw(batch);
+        for (Ball ball: this.balls) { ball.draw(batch); }
         for (Brick brick: this.bricks) { brick.draw(batch);}
         for (int i=0; i < this.gameSession.getLives() -1 ; i++) { this.lives.get(i).draw(batch); }
         for (BonBon bonbon : this.bonbons) { bonbon.draw(batch); }
         this.explosionManager.draw(batch);
         for (Bomb bomb: this.bombs) { bomb.draw(batch);}
+        this.exitButton.draw(batch);
         batch.end();
 //        shapeRenderer.rect(
 //            gameSession.getPaddleX(),
@@ -223,20 +245,29 @@ public class GamePlayScreen extends BaseScreen {
 
     }
 
-    private void checkGameEndConditions() {
-        if (gameSession.isGameOver()) {
-            game.getFinish().setFinalScore(this.gameSession.getScore());
-            game.getFinish().setMessage("Проигрыш");
-            game.getFinish().setVictory(false);
-            if (this.gameSession.getScore() > 0) { game.getRecordsTable().addResult(this.gameSession.getScore()); }
-            game.setScreen(game.getFinish());
-        }
-        else if (this.bricks.size == 0) {
-            game.getFinish().setFinalScore(this.gameSession.getScore());
+
+    private void terminate(boolean success) {
+        game.getFinish().setFinalScore(this.gameSession.getScore());
+        if (success) {
+            this.getAudio().getWin().play(gameSession.getSoundVolume());
             game.getFinish().setMessage("Победа");
             game.getFinish().setVictory(true);
-            if (this.gameSession.getScore() > 0) { game.getRecordsTable().addResult(this.gameSession.getScore()); }
-            game.setScreen(game.getFinish());
+                     }
+        else {
+            this.getAudio().getLose().play(gameSession.getSoundVolume());
+            game.getFinish().setMessage("Проигрыш");
+            game.getFinish().setVictory(false);
+             }
+        if (this.gameSession.getScore() > 0) { game.getRecordsTable().addResult(this.gameSession.getScore()); }
+        game.setScreen(game.getFinish());
+    }
+
+    private void checkGameEndConditions() {
+        if (gameSession.isGameOver()) {
+            this.terminate(false);
+        }
+        else if (this.bricks.size == 0) {
+            this.terminate(true);
         }
 
 //        else if (gameSession.isLevelCompleted()) {
@@ -263,7 +294,16 @@ public class GamePlayScreen extends BaseScreen {
     public void hide() { }
 
     @Override
-    public void handle() {  }
+    public void handle() {
+        super.handle();
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            this.terminate(false);
+        }
+        if (Gdx.input.isTouched()) {
+            Vector3 touch = this.game.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+            if (this.exitButton.isHit(touch.x, touch.y)) { this.terminate(false);}
+                                   }
+    }
 
     @Override
     public void draw() { }
@@ -276,7 +316,7 @@ public class GamePlayScreen extends BaseScreen {
 //        Ускорить игру: уменьшите delta (например, delta * 0.5f).
 //            world.setVelocityThreshold(Float.MAX_VALUE); // Отключаем порог скорости для ускорения
 //            world.step(BOOST_SPEED * delta, 6, 2); // Устанавливаем ускоренный шаг физики
-
+        this.handle();
         this.timer.update(delta);
         if (timer.isActive()) {
             this.remainder = String.format("%d", timer.remainder());
@@ -290,27 +330,29 @@ public class GamePlayScreen extends BaseScreen {
             this.state = GameState.NOTHING;
         }
         accumulator += delta;
-        float scaledStep = timeStep * timeScale;
+        float scaledStep = GameSettings.TIME_STEP * GameSettings.SCALE;
         while (accumulator >= scaledStep) {
-
             accumulator -= scaledStep;
-            camera.update();
+            this.camera.update();
             updateGameLogic(delta);
             checkGameEndConditions();
-            paddle.update(delta);
-            ball.update(delta);
+            this.paddle.update();
+            for (Ball ball: this.balls) { ball.update(); }
             // Удаляем разрушенные кирпичи
-            for (int i = bricks.size - 1; i >= 0; i--) {
-                if (bricks.size == 0) { break; }
-                if (i > (bricks.size - 1)) {continue;}
-                if (bricks.get(i) == null) {continue;}
-                if (bricks.get(i).isDestroyed()) {
-                    if (bricks.get(i).getType() == 8) { this.bonbons.add(new BonBon(bricks.get(i).getX(),bricks.get(i).getY(), game)); }
-                    if ((bricks.get(i).getType() == 7) && (! this.timer.isActive()))  {
+            for (int i = this.bricks.size - 1; i >= 0; i--) {
+                if (this.bricks.size == 0) { break; }
+                if (i > (this.bricks.size - 1)) {continue;}
+                if (this.bricks.get(i) == null) {continue;}
+                if (this.bricks.get(i).isDestroyed()) {
+                    if (this.bricks.get(i).getType() == 8) {
+                        this.bonbons.add(new BonBon(this.bricks.get(i).getX()
+                            , this.bricks.get(i).getY(), this.game));
+                                                           }
+                    if ((this.bricks.get(i).getType() == 7) && (! this.timer.isActive()))  {
                         this.timer.activate(30000);
                         this.state = GameState.BOOST;
                                                                                       }
-                    if ((bricks.get(i).getType() == 6) && (! this.timer.isActive()))  {
+                    if ((this.bricks.get(i).getType() == 6) && (! this.timer.isActive()))  {
                         this.timer.activate(60000);
                         this.state = GameState.EXTENDED_PADDLE;
                         this.paddle.setWidth(2 * this.paddle.getWidth());
@@ -327,20 +369,35 @@ public class GamePlayScreen extends BaseScreen {
                     if (bricks.get(i).getType() == 3) {
                         this.bombs.add(new Bomb(bricks.get(i).getX(), bricks.get(i).getY(), this.game));
                     }
+                    if (bricks.get(i).getType() == 2) {
+                        Ball ball = new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this);
+                        ball.getBody().setLinearVelocity(game.getGameSession().getBallVelocity(), game.getGameSession().getBallVelocity());
+                        balls.add(ball);
+                        ball = new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this);
+                        ball.getBody().setLinearVelocity(- game.getGameSession().getBallVelocity(), - game.getGameSession().getBallVelocity());
+                        balls.add(ball);
+                    }
 
                     world.destroyBody(bricks.get(i).getBody());
                     bricks.removeIndex(i);
                 }
             }
-            if ((ball.getY() < -ball.getHeight())
-                   || (ball.getX() < 0 )
-                  || ball.getX() > gameSession.getScreenWidth()) {
-                world.destroyBody(ball.getBody());
-                ball.dispose();
+            for (Ball ball: this.balls) {
+                if ((ball.getY() < 0) || (ball.getX() < 0 )
+                    || (ball.getX() > gameSession.getScreenWidth())) {
+                    this.balls.removeValue(ball, false);
+                    ball.dispose();
+
+                }
+
+            }
+            if (this.balls.size == 0) {
                 gameSession.setLives(gameSession.getLives() - 1);
                 createBall();
-                                                                                                      }
-            world.step(scaledStep, 6, 2);
+            }
+
+
+            world.step(delta, GameSettings.VELOCITY_ITERATIONS, GameSettings.POSITION_ITERATIONS);
         }
     }
 
@@ -382,13 +439,9 @@ public class GamePlayScreen extends BaseScreen {
 
     }
 
-    public GameSession getGameSession() {
-        return gameSession;
-    }
+    public GameSession getGameSession() { return gameSession; }
 
-    public Array<Brick> getBricks() {
-        return bricks;
-    }
+    public Array<Brick> getBricks() { return bricks; }
 
     public BonBon getBonBon(Body body) {
         BonBon result = null;
@@ -400,7 +453,6 @@ public class GamePlayScreen extends BaseScreen {
         }
         return result;
     }
-
 
 
     @Override

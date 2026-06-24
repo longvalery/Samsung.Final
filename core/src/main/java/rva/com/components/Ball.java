@@ -4,21 +4,83 @@ import com.badlogic.gdx.Gdx;
 import rva.com.Main;
 import rva.com.services.GameResources;
 
-public class Ball extends GameObject{
+public class Ball {
+    private Body body;
+    private int width;
+    private int height;
 
-    public Ball(float x, float y, Main game) {
-        super(x, y, game.getGameSession().getBallWidth(), game.getGameSession().getBallHeight(),
-            game.getGameSession().getBallVelocity(), - game.getGameSession().getBallVelocity(), 0.0f,
-            false, GameResources.BALL_PATH, game );
+    private Sprite sprite;
+    private GamePlayScreen game;
+    private Texture texture;
+
+    public Ball(World world, float x, float y, GamePlayScreen game) {
+        this.game = game;
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x, y);
+
+        body = world.createBody(bodyDef);
+        this.height = game.getGameSession().getBallHeight();
+        this.width = game.getGameSession().getBallWidth();
+        CircleShape shape = new CircleShape();
+        shape.setRadius(game.getGameSession().getBallWidth() / 2.0f); // 8f
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1f;
+        fixtureDef.friction = 0.3f;
+        fixtureDef.restitution = 1f; // Максимальное отражение
+        body.createFixture(fixtureDef);
+        shape.dispose();
+
+        this.texture = new Texture(GameResources.BALL_PATH);
+        this.sprite = new Sprite(texture);
+        this.sprite.setSize(width, height); // масштабируем спрайт
+
+        // Задаём начальную скорость
+        body.setLinearVelocity(game.getGameSession().getBallVelocity(), - game.getGameSession().getBallVelocity());
+
+        body.setUserData("ball");
+    }
+
+    public void draw(SpriteBatch batch) {
+        Vector2 position = this.body.getPosition();
+        float originX, originY;
+        originX = position.x - (this.width / 2.0f);
+        originY = position.y - (this.height / 2.0f);
+        // Устанавливаем центр спрайта как точку вращения
+        this.sprite.setOrigin(this.width / 2.0f, this.height / 2.0f);
+        // перемещаем картинку
+        this.sprite.setPosition(originX,  originY);
+        this.sprite.draw(batch);
+//        System.out.println(String.format("originX %6.1f,  originY %6.1f", originX,  originY));
 
         this.getBody().setUserData("ball");
         // System.out.println("Create Ball");
     }
 
     public void reset() {
-        getBody().setTransform(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0);
-        getBody().setLinearVelocity(this.getGame().getGameSession().getBallVelocity()
-                                  , - getGame().getGameSession().getBallVelocity());
+        body.setTransform(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, 0f);
+        body.setLinearVelocity(game.getGameSession().getBallVelocity(), - game.getGameSession().getBallVelocity());
+    }
+
+    public Body getBody() {
+        return body;
+    }
+
+    public float getY() {
+        Vector2 position = body.getPosition();
+        return position.y;
+                        }
+    public float getX() {
+        Vector2 position = body.getPosition();
+        return position.x;
+    }
+
+
+    public void dispose() {
+        this.game.getWorld().destroyBody(this.body);
+        if (this.texture != null) { this.texture.dispose(); }
     }
 
 }

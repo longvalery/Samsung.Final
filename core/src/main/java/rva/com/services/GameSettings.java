@@ -4,7 +4,7 @@ package rva.com.services;
 import com.badlogic.gdx.graphics.Color;
 
 public class GameSettings {
-    public static final float SCALE = 1.0f;
+    public static final float SCALE = 0.4f;
     public static final int SCREEN_WIDTH = 480;
     public static final int SCREEN_HEIGHT = 600;
 
@@ -16,5 +16,12 @@ public class GameSettings {
 
     public static final int NUM_PARTICLES = 60; // количество частиц
     public static final float BLAST_POWER = 150f; // сила взрыва
+
+    public static final float  TIME_STEP =  1/60f;
+    public static final int VELOCITY_ITERATIONS = 6;
+    public static final int POSITION_ITERATIONS = 2;
+
+    public static final int MAX_SUB_STEPS = 5;
+
 
 }

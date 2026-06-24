@@ -34,7 +34,9 @@ public class Paddle extends GameObject{
     }
 
 
-    public void setWidth(float width) {
+    public void reset() { this.setWidth(game.getGameSession().getPaddleWidth());}
+
+    public void setWidth(int width) {
         this.width = width;
         getBody().destroyFixture(getBody().getFixtureList().first());
         FixtureDef fixtureDef = new FixtureDef();

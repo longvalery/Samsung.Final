@@ -2,7 +2,6 @@ package rva.com.services;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-
 import rva.com.Main;
 import rva.com.managers.MemoryManager;
 
@@ -15,6 +14,7 @@ public class GameSession {
     private int paddleVelocity, paddleWidth, paddleHeight;
     private int ballVelocity, ballWidth, ballHeight;
     private int bombHeight, bombWidth;
+
 
     private int tableCellPad, tablePad, tableColumn1Width, tableColumn2Width, tableColumn3Width;
 

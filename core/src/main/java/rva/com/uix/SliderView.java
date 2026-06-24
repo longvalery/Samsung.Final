@@ -1,118 +1,159 @@
 package rva.com.uix;
 
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-public class SliderView extends Group {
-    private Slider slider;
-    private Skin skin;
-    private Label valueLabel;
+import rva.com.Main;
 
-    public SliderView(float x, float y, int width, int height
-            , float min, float max, float step, float value, String text, BitmapFont font) {
+public class SliderView extends Table {
+    private final Slider slider;
+    private final Label valueLabel;
+    private final Skin skin;
+    private final Main game;
+    private final int type;
+
+    private final Texture roundTexture;  // для освобождения ресурсов
+
+    /**
+     * Создаёт SliderView.
+     *
+     * @param x      координата X левого нижнего угла виджета
+     * @param y      координата Y левого нижнего угла виджета
+     * @param width  ширина виджета (вместе с меткой и слайдером)
+     * @param height высота виджета (должна быть больше толщины линии)
+     * @param min    минимальное значение слайдера
+     * @param max    максимальное значение слайдера
+     * @param step   шаг изменения
+     * @param value  начальное значение
+     * @param text   текст перед значением (например, "Громкость")
+     * @param font   шрифт для подписи
+     */
+    public SliderView(float x, float y, int width, int height,
+                      float min, float max, float step, float value,
+                      String text, BitmapFont font, Main game, int type) {
         super();
+        this.game = game;
+        this.type = type;
+
+        // Устанавливаем позицию и точный размер виджета
+        setPosition(x, y);
+        setSize(width, height);
+
+        // 1. Создаём Skin и стили для слайдера
         skin = new Skin();
         skin.add("default", new Label.LabelStyle(font, null));
 
-// Создаем простые текстуры для слайдера
+        // --- Создаём фон слайдера (тонкая линия) ---
+        int lineThickness = 5;
+        // ТЕПЕРЬ создаём текстуру с реальной шириной = width (переданная ширина виджета)
+        // Она будет растянута до размера ячейки слайдера, но линия останется видимой.
         Pixmap bgPixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        bgPixmap.setColor(Color.GRAY);
+        bgPixmap.setColor(0, 0, 0, 0); // прозрачный фон
         bgPixmap.fill();
+
+        bgPixmap.setColor(Color.GRAY);
+        int yLine = (height - lineThickness) / 2;
+        bgPixmap.fillRectangle(0, yLine, width, lineThickness); // линия на всю ширину
         Texture bgTexture = new Texture(bgPixmap);
         bgPixmap.dispose();
 
-        Pixmap knobPixmap = new Pixmap(16, 16, Pixmap.Format.RGBA8888);
+        // --- Ручка слайдера (круглая) ---
+        int knobSize = 16;
+        Pixmap knobPixmap = new Pixmap(knobSize, knobSize, Pixmap.Format.RGBA8888);
         knobPixmap.setColor(Color.WHITE);
-        knobPixmap.fill();
+        knobPixmap.fillCircle(knobSize / 2, knobSize / 2, knobSize / 2 - 1);
         Texture knobTexture = new Texture(knobPixmap);
         knobPixmap.dispose();
 
-        // Регистрируем текстуры в Skin
         skin.add("bgTexture", bgTexture);
         skin.add("knobTexture", knobTexture);
 
-        // Создаем Drawable через TextureRegionDrawable
-        TextureRegionDrawable sliderBgDrawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
-        TextureRegionDrawable knobDrawable = new TextureRegionDrawable(new TextureRegion(knobTexture));
+        TextureRegionDrawable sliderBgDrawable =
+            new TextureRegionDrawable(new TextureRegion(bgTexture));
+        TextureRegionDrawable knobDrawable =
+            new TextureRegionDrawable(new TextureRegion(knobTexture));
 
-        // Создаем стиль слайдера
         Slider.SliderStyle sliderStyle = new Slider.SliderStyle();
         sliderStyle.background = sliderBgDrawable;
         sliderStyle.knob = knobDrawable;
-
-        // Регистрируем стиль
         skin.add("default-horizontal", sliderStyle);
 
+        // 2. Создаём слайдер и подпись
         this.slider = new Slider(min, max, step, false, skin, "default-horizontal");
-        this.slider.setPosition(x,y);
-        this.slider.setSize(width, height);
         this.slider.setValue(value);
-        // Создаём Label для отображения значения (можно также выводить text)
-        this.valueLabel = new Label(text + ": " + value, skin, "default");
 
-        float labelX = slider.getX() + slider.getWidth() + 20;
-        float labelY = slider.getY() + (slider.getHeight() - valueLabel.getHeight()) / 2; // центрируем по вертикали
-        this.valueLabel.setPosition(labelX, labelY);
+        String initialText = text + ": " + formatValue(value, step);
+        this.valueLabel = new Label(initialText, skin, "default");
 
-        // Обновляем Label при изменении слайдера
-        this.slider.addListener(new ChangeListener() {
+        // 3. Создаём фон всей группы (скруглённый прямоугольник)
+        int radius = 10;
+        Pixmap roundPixmap = createRoundedRectPixmap(width, height, radius, Color.BROWN);
+        this.roundTexture = new Texture(roundPixmap);
+        roundPixmap.dispose();
+
+        NinePatch ninePatch = new NinePatch(roundTexture, radius, radius, radius, radius);
+        NinePatchDrawable backgroundDrawable = new NinePatchDrawable(ninePatch);
+        setBackground(backgroundDrawable);
+
+        // 4. Настраиваем отступы внутри таблицы
+        int padValue = radius + 5;
+        pad(padValue);
+
+        // 5. Добавляем элементы в таблицу
+        add(valueLabel).left();
+        add(slider).padLeft(20).growX().fillY(); // слайдер занимает всё оставшееся место
+
+        // 6. Выполняем компоновку
+        layout();
+
+        // 7. Обработчик изменения слайдера
+        slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 float val = slider.getValue();
-                // Форматируем вывод: если шаг меньше 1, показываем 2 знака после запятой
-                String formatted = (step >= 1) ? String.valueOf((int) val) : String.format("%.1f", val);
-                valueLabel.setText(text + ": " + formatted);
+                if (type == 1) {
+                    game.getSettings().changeMusicVolume(val);
+                } else {
+                    game.getSettings().changeSoundVolume(val);
+                }
+                valueLabel.setText(text + ": " + formatValue(val, step));
+                invalidate();
+                layout();
             }
         });
-
-        addActor(this.slider);
-        addActor(this.valueLabel);
-
-
     }
 
-
-    public void draw(SpriteBatch batch) {
-
-        this.slider.draw(batch, 1.0f);
-        this.valueLabel.draw(batch, 1.0f);
-
+    // Вспомогательный метод для форматирования значения
+    private String formatValue(float val, float step) {
+        if (step >= 1) { return String.valueOf((int) val);}
+        else { return String.format("%.1f", val); }
     }
 
-
-    // Метод для получения текущего значения слайдера
-    public float getValue() {
-        return slider.getValue();
+    // Метод создания скруглённого прямоугольника (оставлен без изменений)
+    private Pixmap createRoundedRectPixmap(int width, int height, int radius, Color color) {
+        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        pixmap.setColor(color);
+        pixmap.fillRectangle(0, 0, width, height);
+        // Здесь можно реализовать скругление, но я не буду... раз КИРПИЧИ ;)
+        return pixmap;
     }
 
-    // Метод для программной установки значения
-
-    public void setValue(float val) {
-        slider.setValue(val);
-        // Обновляем label (лучше вызвать listener, но можно вручную)
-        float currentVal = slider.getValue();
-        String formatted = String.format("%.1f", currentVal);
-        valueLabel.setText(valueLabel.getText().toString().replaceFirst(": .*$", ": " + formatted));
-    }
-
-
-
+    // Освобождение ресурсов (добавьте при необходимости)
     public void dispose() {
-        if (skin != null) skin.dispose();
-
+        roundTexture.dispose();
+        skin.dispose();
     }
 }
-
-
