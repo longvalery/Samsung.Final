@@ -64,6 +64,7 @@ public class Brick {
         this.maxCount = 1;
         if (type == 9) { this.count = 2; this.maxCount = 2;}
         if (type == 10) { this.count = 3; this.maxCount = 3;}
+        // System.out.println("Create Brick");
     }
 
     public void draw(SpriteBatch batch) {

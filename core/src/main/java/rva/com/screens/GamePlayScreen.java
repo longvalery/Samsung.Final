@@ -230,7 +230,7 @@ public class GamePlayScreen extends BaseScreen {
         }
         this.explosionManager.update(delta);
         for (int i = bombs.size - 1; i >= 0; i--) {
-            bombs.get(i).update();
+            bombs.get(i).update(delta);
             if ((bombs.get(i).getY() < 0)  || bombs.get(i).isNeedDestroy()) {
                 if (bombs.get(i).isNeedDestroy()) {
                     gameSession.setLives(gameSession.getLives() - 1);

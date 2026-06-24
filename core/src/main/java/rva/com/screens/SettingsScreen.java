@@ -1,5 +1,6 @@
 package rva.com.screens;
 import static rva.com.services.GameResources.BUTTON_PATH;
+import static rva.com.services.GameResources.GAME_NAME;
 import static rva.com.services.GameResources.SETTINGS_ITEMS;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -105,14 +106,15 @@ public class SettingsScreen  extends BaseScreen {
             ,GameSettings.BACKGROUND_COLOR.b
             ,GameSettings.BACKGROUND_COLOR.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        batch.begin();
         this.game.getLayout().setText(this.game.getTitleFont(), "НАСТРОЙКИ");
         float widthInPixels = this.game.getLayout().width;
         float centerX = (Gdx.graphics.getWidth() - widthInPixels) / 2f;
         float centerY = this.game.getGameSession().getTitleLine() - this.game.getLayout().height; // / 2f;
-
-        batch.begin();
         this.game.getTitleFont().draw(batch, "НАСТРОЙКИ", centerX, centerY);
+
+
+
         for (ButtonView button : this.buttonArray) {
             button.draw(batch);
         }
@@ -120,6 +122,22 @@ public class SettingsScreen  extends BaseScreen {
         for (SliderView slider : this.sliderArray) {
             slider.draw(batch, 1.0f);
         }
+
+
+//        this.game.getLayout().setText(this.game.getTitleFont(), "НАСТРОЙКИ");
+//        float widthInPixels = this.game.getLayout().width;
+//        float heightInPixels = this.game.getLayout().height;
+//        float centerX = (Gdx.graphics.getWidth() - widthInPixels) / 2f;
+//        float centerY = this.game.getGameSession().getTitleLine() - this.game.getLayout().height; // / 2f;
+//        float diagonalAngle = (float) Math.tan(Math.toRadians(5));
+//        float centerTextX = centerX + widthInPixels / 2f;
+//        float centerTextY = centerY - heightInPixels / 2f;
+//        float correctOffset = centerTextY + diagonalAngle * centerTextX;
+//        this.game.getShader().bind();
+//        this.game.getShader().setUniformf("u_diagonalOffset", correctOffset);
+//        this.game.getShader().setUniformf("u_diagonalAngle", diagonalAngle); // обязательно обновляем!
+//        batch.setShader(this.game.getShader());
+//        this.game.getTitleFont().draw(batch, "НАСТРОЙКИ", centerX, centerY);
 
         batch.end();
 

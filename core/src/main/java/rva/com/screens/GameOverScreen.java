@@ -44,7 +44,7 @@ public class GameOverScreen extends BaseScreen {
 
     @Override
     public void show() {
-        System.out.println("Game Over Screen shown. Score: " + finalScore);
+       //  System.out.println("Game Over Screen shown. Score: " + finalScore);
         Gdx.input.setInputProcessor(inputManager);
     }
 
