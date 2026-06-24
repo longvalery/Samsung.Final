@@ -2,7 +2,6 @@ package rva.com.services;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-
 import rva.com.Main;
 import rva.com.managers.MemoryManager;
 

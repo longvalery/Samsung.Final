@@ -11,10 +11,8 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 import rva.com.Main;
-import rva.com.screens.GamePlayScreen;
 import rva.com.services.GameResources;
 import rva.com.services.GameSettings;
-import rva.com.uix.ImageView;
 
 public class BonBon  {
     private Main game;

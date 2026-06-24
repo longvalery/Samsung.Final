@@ -1,6 +1,4 @@
 package rva.com.screens;
-
-import static java.lang.Math.round;
 import static rva.com.services.GameResources.BUTTON_PATH;
 import static rva.com.services.GameResources.SETTINGS_ITEMS;
 import com.badlogic.gdx.Gdx;
@@ -8,7 +6,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
 import java.util.ArrayList;
 import rva.com.Main;
 import rva.com.services.GameSettings;

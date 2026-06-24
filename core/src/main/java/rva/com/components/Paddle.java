@@ -13,8 +13,6 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import rva.com.screens.GamePlayScreen;
 import rva.com.services.GameResources;
-import rva.com.services.GameSession;
-import rva.com.services.GameSettings;
 
 public class Paddle {
     private Body body;

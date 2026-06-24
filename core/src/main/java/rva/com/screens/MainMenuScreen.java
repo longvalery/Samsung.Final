@@ -8,16 +8,13 @@ import static rva.com.services.GameResources.SETTINGS_ITEMS;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
-
 import java.util.ArrayList;
-
 import rva.com.Main;
 import rva.com.components.MenuItemDimensions;
 import rva.com.services.GameSettings;

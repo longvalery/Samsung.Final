@@ -2,9 +2,6 @@ package rva.com.managers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.utils.Json;
-
-import java.util.ArrayList;
 
 public class MemoryManager {
     private static final Preferences preferences = Gdx.app.getPreferences("User saves");

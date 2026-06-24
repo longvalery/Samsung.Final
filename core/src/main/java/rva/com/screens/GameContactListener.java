@@ -8,12 +8,10 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
-
-import rva.com.components.Ball;
 import rva.com.components.Bomb;
 import rva.com.components.BonBon;
 import rva.com.components.Brick;
-import rva.com.components.Wall;
+
 
 public class GameContactListener implements ContactListener {
     private GamePlayScreen game;
