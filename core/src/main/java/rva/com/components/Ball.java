@@ -1,7 +1,17 @@
 package rva.com.components;
 
 import com.badlogic.gdx.Gdx;
-import rva.com.Main;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.World;
+
+import rva.com.screens.GamePlayScreen;
 import rva.com.services.GameResources;
 
 public class Ball {
@@ -55,8 +65,16 @@ public class Ball {
         this.sprite.draw(batch);
 //        System.out.println(String.format("originX %6.1f,  originY %6.1f", originX,  originY));
 
-        this.getBody().setUserData("ball");
-        // System.out.println("Create Ball");
+    }
+
+    public void update() {
+        // Поддерживаем постоянную скорость мяча
+        Vector2 velocity = body.getLinearVelocity();
+        float speed = velocity.len();
+        if (speed < game.getGameSession().getBallVelocity()) {
+            velocity.setLength(game.getGameSession().getBallVelocity());
+            body.setLinearVelocity(velocity);
+        }
     }
 
     public void reset() {
@@ -71,7 +89,7 @@ public class Ball {
     public float getY() {
         Vector2 position = body.getPosition();
         return position.y;
-                        }
+    }
     public float getX() {
         Vector2 position = body.getPosition();
         return position.x;
