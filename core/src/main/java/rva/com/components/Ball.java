@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
+import rva.com.Main;
 import rva.com.screens.GamePlayScreen;
 import rva.com.services.GameResources;
 
@@ -54,27 +55,7 @@ public class Ball {
     }
 
     public void draw(SpriteBatch batch) {
-        Vector2 position = this.body.getPosition();
-        float originX, originY;
-        originX = position.x - (this.width / 2.0f);
-        originY = position.y - (this.height / 2.0f);
-        // Устанавливаем центр спрайта как точку вращения
-        this.sprite.setOrigin(this.width / 2.0f, this.height / 2.0f);
-        // перемещаем картинку
-        this.sprite.setPosition(originX,  originY);
         this.sprite.draw(batch);
-//        System.out.println(String.format("originX %6.1f,  originY %6.1f", originX,  originY));
-
-    }
-
-    public void update() {
-        // Поддерживаем постоянную скорость мяча
-        Vector2 velocity = body.getLinearVelocity();
-        float speed = velocity.len();
-        if (speed < game.getGameSession().getBallVelocity()) {
-            velocity.setLength(game.getGameSession().getBallVelocity());
-            body.setLinearVelocity(velocity);
-        }
     }
 
     public void reset() {
@@ -89,7 +70,7 @@ public class Ball {
     public float getY() {
         Vector2 position = body.getPosition();
         return position.y;
-    }
+                        }
     public float getX() {
         Vector2 position = body.getPosition();
         return position.x;
@@ -101,4 +82,15 @@ public class Ball {
         if (this.texture != null) { this.texture.dispose(); }
     }
 
+    public void update() {
+        Vector2 position = this.body.getPosition();
+        float originX, originY;
+        originX = position.x - (this.width / 2.0f);
+        originY = position.y - (this.height / 2.0f);
+        // Устанавливаем центр спрайта как точку вращения
+        this.sprite.setOrigin(this.width / 2.0f, this.height / 2.0f);
+        // перемещаем картинку
+        this.sprite.setPosition(originX,  originY);
+
+    }
 }

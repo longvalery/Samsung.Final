@@ -1,5 +1,4 @@
 package rva.com.components;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -14,7 +13,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import rva.com.screens.GamePlayScreen;
 import rva.com.services.GameResources;
 import rva.com.services.GameSession;
-import rva.com.services.GameSettings;
 
 public class Paddle {
     private Body body;
@@ -23,6 +21,7 @@ public class Paddle {
     private int height;
     private Texture texture;
     private Sprite sprite;
+
 
     public Paddle(World world, float x, float y, GamePlayScreen game) {
         BodyDef bodyDef = new BodyDef();
@@ -94,8 +93,6 @@ public class Paddle {
 
     public int getWidth() { return width; }
 
-    public void reset() { this.setWidth(game.getGameSession().getPaddleWidth());}
-
     public void setWidth(int width) {
         this.width = width;
         this.sprite.setSize(width, height);
@@ -109,5 +106,9 @@ public class Paddle {
         fixtureDef.restitution = 0.8f;
         body.createFixture(fixtureDef);
 
+    }
+
+    public void reset() {
+        this.width = game.getGameSession().getPaddleWidth();
     }
 }
