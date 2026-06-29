@@ -39,7 +39,6 @@ public class GamePlayScreen extends BaseScreen {
     private Array<Wall> walls;
     private World world;
     private Paddle paddle;
-//    private Ball ball;
     private Array<Brick> bricks;
     private float accumulator = 0f;
     private ImageView topBlackoutView;
@@ -95,6 +94,7 @@ public class GamePlayScreen extends BaseScreen {
         this.remainder = "";
         world.setContactListener(new GameContactListener(this));
         this.explosionManager = new ExplosionManager(this.world);
+
 //        world.setVelocityThreshold(Float.MAX_VALUE);
 
     }
@@ -114,7 +114,9 @@ public class GamePlayScreen extends BaseScreen {
     }
     public AudioManager getAudio() {  return game.getAudioManager(); }
     private void createBall() {
-        balls.add(new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this));
+        Ball ball = new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this);
+        ball.getBody().setLinearVelocity(game.getGameSession().getBallVelocity(), - game.getGameSession().getBallVelocity());
+        balls.add(ball);
     }
     private void createWalls() {
         // Левая стена
@@ -144,12 +146,6 @@ public class GamePlayScreen extends BaseScreen {
 
     @Override
     public void show() {
-        if (this.balls != null) {
-            for (Ball ball : this.balls) { ball.dispose();}
-            this.balls.clear();
-            createBall();
-                                }
-        if (this.balls.get(0) != null) { this.balls.get(0).reset(); }
         if (this.paddle == null) { createPaddle(); }
         this.paddle.reset();
         this.timer.reset();
@@ -163,6 +159,13 @@ public class GamePlayScreen extends BaseScreen {
                                             }
                                 }
         this.createBricks();
+        if (this.balls != null) {
+            for (Ball ball : this.balls) { ball.dispose();}
+            this.balls.clear();
+            createBall();
+        }
+        if (this.balls.get(0) != null) { this.balls.get(0).reset(); }
+
     }
 
     @Override
@@ -333,72 +336,75 @@ public class GamePlayScreen extends BaseScreen {
         float scaledStep = GameSettings.TIME_STEP * GameSettings.SCALE;
         while (accumulator >= scaledStep) {
             accumulator -= scaledStep;
-            this.camera.update();
-            updateGameLogic(delta);
-            checkGameEndConditions();
-            this.paddle.update();
-            for (Ball ball: this.balls) { ball.update(); }
-            // Удаляем разрушенные кирпичи
-            for (int i = this.bricks.size - 1; i >= 0; i--) {
-                if (this.bricks.size == 0) { break; }
-                if (i > (this.bricks.size - 1)) {continue;}
-                if (this.bricks.get(i) == null) {continue;}
-                if (this.bricks.get(i).isDestroyed()) {
-                    if (this.bricks.get(i).getType() == 8) {
-                        this.bonbons.add(new BonBon(this.bricks.get(i).getX()
-                            , this.bricks.get(i).getY(), this.game));
-                                                           }
-                    if ((this.bricks.get(i).getType() == 7) && (! this.timer.isActive()))  {
-                        this.timer.activate(30000);
-                        this.state = GameState.BOOST;
-                                                                                      }
-                    if ((this.bricks.get(i).getType() == 6) && (! this.timer.isActive()))  {
-                        this.timer.activate(60000);
-                        this.state = GameState.EXTENDED_PADDLE;
-                        this.paddle.setWidth(2 * this.paddle.getWidth());
-                    }
-                    if ((bricks.get(i).getType() == 5) && (! this.timer.isActive()))  {
-                        this.timer.activate(30000);
-                        this.state = GameState.SLOW;
-                    }
+            world.step(delta, GameSettings.VELOCITY_ITERATIONS, GameSettings.POSITION_ITERATIONS);
+        }
 
-                    if (bricks.get(i).getType() == 4) {
-                        this.explosion(bricks.get(i));
-                        continue;
-                                                      }
-                    if (bricks.get(i).getType() == 3) {
-                        this.bombs.add(new Bomb(bricks.get(i).getX(), bricks.get(i).getY(), this.game));
-                    }
-                    if (bricks.get(i).getType() == 2) {
-                        Ball ball = new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this);
-                        ball.getBody().setLinearVelocity(game.getGameSession().getBallVelocity(), game.getGameSession().getBallVelocity());
-                        balls.add(ball);
-                        ball = new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this);
-                        ball.getBody().setLinearVelocity(- game.getGameSession().getBallVelocity(), - game.getGameSession().getBallVelocity());
-                        balls.add(ball);
-                    }
-
-                    world.destroyBody(bricks.get(i).getBody());
-                    bricks.removeIndex(i);
+        // Удаляем разрушенные кирпичи
+        for (int i = this.bricks.size - 1; i >= 0; i--) {
+            if (this.bricks.size == 0) { break; }
+            if (i > (this.bricks.size - 1)) {continue;}
+            if (this.bricks.get(i) == null) {continue;}
+            if (this.bricks.get(i).isDestroyed()) {
+                if (this.bricks.get(i).getType() == 8) {
+                    this.bonbons.add(new BonBon(this.bricks.get(i).getX()
+                        , this.bricks.get(i).getY(), this.game));
                 }
+                if ((this.bricks.get(i).getType() == 7) && (! this.timer.isActive()))  {
+                    this.timer.activate(30000);
+                    this.state = GameState.BOOST;
+                }
+                if ((this.bricks.get(i).getType() == 6) && (! this.timer.isActive()))  {
+                    this.timer.activate(60000);
+                    this.state = GameState.EXTENDED_PADDLE;
+                    this.paddle.setWidth(2 * this.paddle.getWidth());
+                }
+                if ((bricks.get(i).getType() == 5) && (! this.timer.isActive()))  {
+                    this.timer.activate(30000);
+                    this.state = GameState.SLOW;
+                }
+
+                if (bricks.get(i).getType() == 4) {
+                    this.explosion(bricks.get(i));
+                    continue;
+                }
+                if (bricks.get(i).getType() == 3) {
+                    this.bombs.add(new Bomb(bricks.get(i).getX(), bricks.get(i).getY(), this.game));
+                }
+                if (bricks.get(i).getType() == 2) {
+
+                    Ball ball = new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this);
+                    ball.getBody().setLinearVelocity(game.getGameSession().getBallVelocity() , game.getGameSession().getBallVelocity());
+                    balls.add(ball);
+                    ball = new Ball(this.getWorld(),Gdx.graphics.getWidth() / 2.0f, Gdx.graphics.getHeight() / 2.0f, this);
+                    ball.getBody().setLinearVelocity(- game.getGameSession().getBallVelocity() , - game.getGameSession().getBallVelocity() );
+                    balls.add(ball);
+                }
+
+                world.destroyBody(bricks.get(i).getBody());
+                bricks.removeIndex(i);
             }
-            for (Ball ball: this.balls) {
-                if ((ball.getY() < 0) || (ball.getX() < 0 )
+        }
+
+        for (Ball ball: this.balls) {
+            if (ball != null) {
+                ball.update();
+                if ((ball.getY() < 0) || (ball.getX() < 0)
                     || (ball.getX() > gameSession.getScreenWidth())) {
                     this.balls.removeValue(ball, false);
                     ball.dispose();
-
                 }
-
-            }
-            if (this.balls.size == 0) {
-                gameSession.setLives(gameSession.getLives() - 1);
-                createBall();
-            }
-
-
-            world.step(delta, GameSettings.VELOCITY_ITERATIONS, GameSettings.POSITION_ITERATIONS);
+                              }
         }
+        if (this.balls.size == 0) {
+            gameSession.setLives(gameSession.getLives() - 1);
+            createBall();
+        }
+
+        this.camera.update();
+        updateGameLogic(delta);
+        checkGameEndConditions();
+        this.paddle.update();
+
     }
 
     private void explosion(Brick brick) {

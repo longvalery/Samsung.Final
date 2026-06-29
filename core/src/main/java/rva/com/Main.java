@@ -59,7 +59,6 @@ public class Main extends ApplicationAdapter {
         Gdx.graphics.setTitle(GAME_NAME);
         // Определяем операционную систему
         osName = this.gameSession.detectOperatingSystem();
-     //    System.out.println("Running into: " + osName);
         if (this.osName.contains("Windows")) {
             this.gameSession.setScreenWidth(SCREEN_WIDTH);
             this.gameSession.setScreenHeight(SCREEN_HEIGHT);
@@ -70,7 +69,6 @@ public class Main extends ApplicationAdapter {
             this.gameSession.setScreenWidth(Gdx.graphics.getWidth());
             this.gameSession.setScreenHeight(Gdx.graphics.getHeight());
               }
-       //  System.out.println("Screen sizes: " + this.gameSession.getScreenWidth() + "x" + this.gameSession.getScreenHeight());
         this.gameSession.calcSizes(GameSettings.BRICKS_LINE, GameSettings.BRICKS_IN_LINE);
         this.gameSession.calcSettingsButtonSize(SETTINGS_ITEMS.length);
         // Создаём камеру с размерами экрана
@@ -108,7 +106,6 @@ public class Main extends ApplicationAdapter {
         createScreens();
 
         this.setScreen(this.getMenu());
-//        System.out.println("Line: " + "0 " + this.gameSession.getPaddleLevel() + " " + this.gameSession.getScreenWidth() + " " + this.gameSession.getPaddleLevel());
     }
 
 
@@ -154,7 +151,6 @@ public class Main extends ApplicationAdapter {
         shapeRenderer.setColor(1, 0, 0, 1); // Red line
 //        Vector3 start = camera.unproject(new Vector3(0, this.gameSession.getPaddleLevel(), 0));
 //        Vector3 finish = camera.unproject(new Vector3(this.gameSession.getScreenWidth(), this.gameSession.getPaddleLevel(), 0));
-//        System.out.println(start);
 //        shapeRenderer.line(start.x, start.y, finish.x, finish.y);
         shapeRenderer.line(0, this.gameSession.getPaddleLevel(), this.gameSession.getScreenWidth(), this.gameSession.getPaddleLevel());
         shapeRenderer.line(0, this.gameSession.getLowBorder(), this.gameSession.getScreenWidth(), this.gameSession.getLowBorder());

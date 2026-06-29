@@ -46,7 +46,6 @@ public class MainMenuScreen extends BaseScreen {
     @Override
     public void show() {
         this.selectedItem = 0;
-   //     System.out.println("Main Menu Screen shown");
     }
     @Override
     public void draw() {
@@ -105,8 +104,6 @@ public class MainMenuScreen extends BaseScreen {
         if (Gdx.input.justTouched()) {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             Vector3 touch = this.game.getCamera().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-//            System.out.println(String.format("x: %f, y: %f", touch.x, touch.y));
-//            System.out.println(String.format("x: %d, y: %d", Gdx.input.getX(), Gdx.input.getY()));
             int index = -1;
             for (int i = 0; i < this.menuItems.length; i++) {
                 if (this.menuArray.get(i).isInside(touch.x, touch.y)) {
@@ -123,7 +120,6 @@ public class MainMenuScreen extends BaseScreen {
                             @Override
                             public void run() {
                                 // Код, который выполнится через 0.5 секунды
-                               //  System.out.println("Half second is out !");
                                 game.setScreen(game.getSettings());
                             }
                         }, 0.5f); // задержка в секундах
@@ -195,7 +191,6 @@ public class MainMenuScreen extends BaseScreen {
             float width = this.game.getLayout().width;
             float height = this.game.getLayout().height;
             this.menuArray.add(new MenuItemDimensions(delta, y - height / 2, width, height));
-//            System.out.println(String.format("MENU x: %d, y: %d, width: %f, height: %f", delta, y, width, height));
 
                                                    }
     }

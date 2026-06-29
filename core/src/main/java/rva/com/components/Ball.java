@@ -48,8 +48,8 @@ public class Ball {
         this.sprite = new Sprite(texture);
         this.sprite.setSize(width, height); // масштабируем спрайт
 
-        // Задаём начальную скорость
-        body.setLinearVelocity(game.getGameSession().getBallVelocity(), - game.getGameSession().getBallVelocity());
+//        // Задаём начальную скорость
+//        body.setLinearVelocity(game.getGameSession().getBallVelocity(), - game.getGameSession().getBallVelocity());
 
         body.setUserData("ball");
     }
@@ -64,25 +64,30 @@ public class Ball {
     }
 
     public Body getBody() {
-        return body;
+        return this.body;
     }
 
     public float getY() {
-        Vector2 position = body.getPosition();
+        Vector2 position = this.body.getPosition();
         return position.y;
                         }
     public float getX() {
-        Vector2 position = body.getPosition();
+        Vector2 position = this.body.getPosition();
         return position.x;
     }
 
 
     public void dispose() {
-        this.game.getWorld().destroyBody(this.body);
+//        this.game.getWorld().destroyBody(this.body);
         if (this.texture != null) { this.texture.dispose(); }
     }
 
     public void update() {
+        Vector2 speed =  this.body.getLinearVelocity();
+        float summa = (float) Math.sqrt(speed.x * speed.x + speed.y * speed.y);
+
+        this.body.setLinearVelocity(speed.x / summa * this.game.getGameSession().getBallVelocity(),
+                                    speed.y / summa * this.game.getGameSession().getBallVelocity());
         Vector2 position = this.body.getPosition();
         float originX, originY;
         originX = position.x - (this.width / 2.0f);

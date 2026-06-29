@@ -64,14 +64,11 @@ public class Brick {
         this.maxCount = 1;
         if (type == 9) { this.count = 2; this.maxCount = 2;}
         if (type == 10) { this.count = 3; this.maxCount = 3;}
-        // System.out.println("Create Brick");
     }
 
     public void draw(SpriteBatch batch) {
         if (! this.broken) { this.sprite.draw(batch); }
         else               { this.spriteBroken.draw(batch); }
-//        System.out.println(String.format("originX %6.1f,  originY %6.1f", originX,  originY));
-
     }
 
     public void destroy() { this.destroyed = true; }
@@ -98,7 +95,7 @@ public class Brick {
     public int getRow() { return row; }
 
     public void dispose() {
-        this.game.getWorld().destroyBody(this.body);
-        this.texture.dispose();
+//        this.game.getWorld().destroyBody(this.body);
+        if (this.texture != null) { this.texture.dispose(); }
     }
 }

@@ -1,5 +1,8 @@
 package rva.com.services;
 
+import static rva.com.services.GameSettings.BALL_VELOCITY;
+import static rva.com.services.GameSettings.PADDLE_VELOCITY;
+
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import rva.com.Main;
@@ -31,8 +34,8 @@ public class GameSession {
 
     public GameSession(Main game) {
         this.game = game;
-        this.paddleVelocity = 10;
-        this.ballVelocity = 500;
+        this.paddleVelocity = PADDLE_VELOCITY;
+        this.ballVelocity = BALL_VELOCITY;
     }
 
     public void calcSizes(int bricksLine, int bricksInLine) {
@@ -51,7 +54,7 @@ public class GameSession {
         this.paddleWidth = (int) (0.2 * screenWidth);
         this.paddleHeight = this.paddleWidth / 5;
         this.bonbonSize = (int) (0.8 * this.ballWidth);
-        this.bonbonVelocity = (int) (0.8 * this.ballVelocity);
+        this.bonbonVelocity = (int) (0.5 * this.ballVelocity);
         this.bombHeight = 2 * this.ballWidth;
         this.bombWidth = bombHeight;
         calcTablesSizes();

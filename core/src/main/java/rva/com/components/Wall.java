@@ -29,7 +29,6 @@ public class Wall {
         shape.dispose();
 
         body.setUserData("wall");
-        // System.out.println("Create Wall");
     }
 
     public Body getBody() {
