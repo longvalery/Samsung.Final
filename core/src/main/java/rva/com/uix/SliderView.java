@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 
 import rva.com.Main;
 
@@ -26,6 +27,10 @@ public class SliderView extends Table {
     private final int type;
 
     private final Texture roundTexture;  // для освобождения ресурсов
+    // Ресурсы для освобождения
+    private final Texture bgTexture;
+    private final Texture knobTexture;
+
 
     /**
      * Создаёт SliderView.
@@ -56,18 +61,22 @@ public class SliderView extends Table {
         skin = new Skin();
         skin.add("default", new Label.LabelStyle(font, null));
 
+        String initialText = text + ": " + formatValue(value, step);
+        this.valueLabel = new Label(initialText, skin, "default");
+//        int sliderWidth = (int) (width - valueLabel.getWidth()) - 40;
+
         // --- Создаём фон слайдера (тонкая линия) ---
         int lineThickness = 5;
         // ТЕПЕРЬ создаём текстуру с реальной шириной = width (переданная ширина виджета)
         // Она будет растянута до размера ячейки слайдера, но линия останется видимой.
-        Pixmap bgPixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        Pixmap bgPixmap = new Pixmap(width , height, Pixmap.Format.RGBA8888);
         bgPixmap.setColor(0, 0, 0, 0); // прозрачный фон
         bgPixmap.fill();
 
         bgPixmap.setColor(Color.GRAY);
         int yLine = (height - lineThickness) / 2;
-        bgPixmap.fillRectangle(0, yLine, width, lineThickness); // линия на всю ширину
-        Texture bgTexture = new Texture(bgPixmap);
+        bgPixmap.fillRectangle(0, yLine, width , lineThickness); // линия на всю ширину width
+        this.bgTexture = new Texture(bgPixmap);
         bgPixmap.dispose();
 
         // --- Ручка слайдера (круглая) ---
@@ -75,11 +84,11 @@ public class SliderView extends Table {
         Pixmap knobPixmap = new Pixmap(knobSize, knobSize, Pixmap.Format.RGBA8888);
         knobPixmap.setColor(Color.WHITE);
         knobPixmap.fillCircle(knobSize / 2, knobSize / 2, knobSize / 2 - 1);
-        Texture knobTexture = new Texture(knobPixmap);
+        this.knobTexture = new Texture(knobPixmap);
         knobPixmap.dispose();
 
-        skin.add("bgTexture", bgTexture);
-        skin.add("knobTexture", knobTexture);
+        skin.add("bgTexture", this.bgTexture);
+        skin.add("knobTexture", this.knobTexture);
 
         TextureRegionDrawable sliderBgDrawable =
             new TextureRegionDrawable(new TextureRegion(bgTexture));
@@ -90,17 +99,13 @@ public class SliderView extends Table {
         sliderStyle.background = sliderBgDrawable;
         sliderStyle.knob = knobDrawable;
         skin.add("default-horizontal", sliderStyle);
-
         // 2. Создаём слайдер и подпись
         this.slider = new Slider(min, max, step, false, skin, "default-horizontal");
         this.slider.setValue(value);
-
-        String initialText = text + ": " + formatValue(value, step);
-        this.valueLabel = new Label(initialText, skin, "default");
-
         // 3. Создаём фон всей группы (скруглённый прямоугольник)
         int radius = 10;
-        Pixmap roundPixmap = createRoundedRectPixmap(width, height, radius, Color.BROWN);
+        int textureSize = 2 * radius + 1; // минимальный размер для NinePatch
+        Pixmap roundPixmap = createRoundedRectPixmap(textureSize, textureSize, radius, Color.BROWN);
         this.roundTexture = new Texture(roundPixmap);
         roundPixmap.dispose();
 
@@ -114,8 +119,7 @@ public class SliderView extends Table {
 
         // 5. Добавляем элементы в таблицу
         add(valueLabel).left();
-        add(slider).padLeft(20).growX().fillY(); // слайдер занимает всё оставшееся место
-
+        add(slider).padLeft(10).padRight(10).minWidth(10).growX().fillY(); // слайдер занимает всё оставшееся место
         // 6. Выполняем компоновку
         layout();
 
@@ -124,16 +128,14 @@ public class SliderView extends Table {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 float val = slider.getValue();
-                if (type == 1) {
-                    game.getSettings().changeMusicVolume(val);
-                } else {
-                    game.getSettings().changeSoundVolume(val);
-                }
+                if (type == 1) { game.getSettings().changeMusicVolume(val); }
+                else           { game.getSettings().changeSoundVolume(val); }
                 valueLabel.setText(text + ": " + formatValue(val, step));
                 invalidate();
                 layout();
             }
         });
+
     }
 
     // Вспомогательный метод для форматирования значения
@@ -142,18 +144,73 @@ public class SliderView extends Table {
         else { return String.format("%.1f", val); }
     }
 
+    // Переопределяем setSize для автоматического пересчёта при изменении размера виджета
+//    @Override
+//    public void setSize(float width, float height) {
+//        super.setSize(width, height);
+//        invalidate();  // заставляем Table пересчитать размеры дочерних элементов
+//        layout();
+//    }
+
+
     // Метод создания скруглённого прямоугольника (оставлен без изменений)
     private Pixmap createRoundedRectPixmap(int width, int height, int radius, Color color) {
         Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
         pixmap.setColor(color);
         pixmap.fillRectangle(0, 0, width, height);
-        // Здесь можно реализовать скругление, но я не буду... раз КИРПИЧИ ;)
+        // Обрезаем углы, рисуя прозрачные пиксели там, где они не должны быть
+        // Центры окружностей для каждого угла:
+        int cx1 = radius, cy1 = radius;                         // левый верхний
+        int cx2 = width - radius, cy2 = radius;                 // правый верхний
+        int cx3 = radius, cy3 = height - radius;                // левый нижний
+        int cx4 = width - radius, cy4 = height - radius;        // правый нижний
+        clearCorner(pixmap, cx1, cy1, radius, 0, 0);                     // левый верхний
+        clearCorner(pixmap, cx2, cy2, radius, width - radius, 0);        // правый верхний
+        clearCorner(pixmap, cx3, cy3, radius, 0, height - radius);       // левый нижний
+        clearCorner(pixmap, cx4, cy4, radius, width - radius, height - radius); // правый нижний
+
+//        clearCorner(pixmap, 0, 0, radius, true, true);   // левый верхний
+//        clearCorner(pixmap, width - radius, 0, radius, false, true); // правый верхний
+//        clearCorner(pixmap, 0, height - radius, radius, true, false); // левый нижний
+//        clearCorner(pixmap, width - radius, height - radius, radius, false, false); // правый нижний
+
         return pixmap;
     }
 
+    // Очистка угловой области: пиксели вне круга с центром (cx, cy) становятся прозрачными
+    private void clearCorner(Pixmap pixmap, int cx, int cy, int r, int startX, int startY) {
+        int r2 = r * r;
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < r; j++) {
+                int px = startX + i;
+                int py = startY + j;
+                int dx = px - cx;
+                int dy = py - cy;
+                if (dx * dx + dy * dy > r2) {
+                    pixmap.drawPixel(px, py, 0xbd532cff); // Color.RED.toIntBits()) ; //  0x00000000); // полностью прозрачный   .CLEAR.
+                }
+            }
+        }
+    }
+//    private void clearCorner(Pixmap pixmap, int x, int y, int r, boolean left, boolean top) {
+//        int r2 = r * r;
+//        for (int i = 0; i < r; i++) {
+//            for (int j = 0; j < r; j++) {
+//                // Расстояние от угла до текущей точки
+//                int dx = left ? r - i - 1 : i;
+//                int dy = top ? r - j - 1 : j;
+//                if (dx * dx + dy * dy > r2) {
+//                    // Точка вне круга — делаем прозрачной
+//                    pixmap.drawPixel(x + i, y + j, 0x00000000);
+//                }
+//            }
+//        }
+//    }
     // Освобождение ресурсов (добавьте при необходимости)
     public void dispose() {
-        roundTexture.dispose();
-        skin.dispose();
+        if (bgTexture != null) bgTexture.dispose();
+        if (knobTexture != null) knobTexture.dispose();
+        if (roundTexture != null) roundTexture.dispose();
+        if (skin != null) skin.dispose();
     }
 }

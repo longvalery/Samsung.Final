@@ -196,7 +196,7 @@ public class GamePlayScreen extends BaseScreen {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         this.topBlackoutView.drawTexture(batch);
-        font.draw(batch, "Очки: " + gameSession.getScore(), gameSession.getxSettingsButton(), this.yLine);
+        font.draw(batch, "Очки: " + gameSession.getScore(), (float) gameSession.getxSettingsButton() / 3.0f, this.yLine);
         font.draw(batch, this.remainder, gameSession.getScreenWidth() - 4 * font.getXHeight(), this.yLine);
         this.paddle.draw(batch);
         for (Ball ball: this.balls) { ball.draw(batch); }
