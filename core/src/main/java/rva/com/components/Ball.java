@@ -97,7 +97,7 @@ public class Ball {
 
 
     public void dispose() {
-        this.game.getWorld().destroyBody(this.body);
+//        this.game.getWorld().destroyBody(this.body);
         if (this.texture != null) { this.texture.dispose(); }
     }
 

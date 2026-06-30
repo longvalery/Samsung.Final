@@ -114,7 +114,7 @@ public class SliderView extends Table {
 
         // 5. Добавляем элементы в таблицу
         add(valueLabel).left();
-        add(slider).padLeft(20).growX().fillY(); // слайдер занимает всё оставшееся место
+        add(slider).padLeft(20).padRight(20).minWidth(20).growX().fillY(); // слайдер занимает всё оставшееся место
 
         // 6. Выполняем компоновку
         layout();

@@ -99,7 +99,7 @@ public abstract class GameObject implements MovingObject {
 
     @Override
     public void dispose() {
-      this.game.getGame().getWorld().destroyBody(this.body);
+//      this.game.getGame().getWorld().destroyBody(this.body);
       this.texture.dispose();
 
     }
