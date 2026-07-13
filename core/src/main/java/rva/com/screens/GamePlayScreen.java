@@ -55,6 +55,8 @@ public class GamePlayScreen extends BaseScreen {
     private Array<Ball> balls;
     private int iconSize;
     private IconButtonView exitButton;
+    // Флаг завершения игры — предотвращает повторную обработку победы/поражения
+    private boolean finished = false;
 
 
     public GamePlayScreen(Main game) {
@@ -250,6 +252,7 @@ public class GamePlayScreen extends BaseScreen {
 
 
     private void terminate(boolean success) {
+        this.finished = true;
         game.getFinish().setFinalScore(this.gameSession.getScore());
         if (success) {
             this.getAudio().getWin().play(gameSession.getSoundVolume());
@@ -269,7 +272,7 @@ public class GamePlayScreen extends BaseScreen {
         if (gameSession.isGameOver()) {
             this.terminate(false);
         }
-        else if (this.bricks.size == 0) {
+        else if (this.bricks.isEmpty()) {
             this.terminate(true);
         }
 
@@ -315,6 +318,10 @@ public class GamePlayScreen extends BaseScreen {
 
     @Override
     public void update(float delta) {
+        if (finished) {
+            // Если игра завершена, не выполняем основную логику и не делаем шаги физики
+            return;
+        }
 //        Замедлить игру: увеличьте delta (например, delta * 2.0f).
 //        Ускорить игру: уменьшите delta (например, delta * 0.5f).
 //            world.setVelocityThreshold(Float.MAX_VALUE); // Отключаем порог скорости для ускорения
@@ -336,12 +343,12 @@ public class GamePlayScreen extends BaseScreen {
         float scaledStep = GameSettings.TIME_STEP * GameSettings.SCALE;
         while (accumulator >= scaledStep) {
             accumulator -= scaledStep;
-            world.step(delta, GameSettings.VELOCITY_ITERATIONS, GameSettings.POSITION_ITERATIONS);
+            world.step(scaledStep, GameSettings.VELOCITY_ITERATIONS, GameSettings.POSITION_ITERATIONS); // delta
         }
 
         // Удаляем разрушенные кирпичи
         for (int i = this.bricks.size - 1; i >= 0; i--) {
-            if (this.bricks.size == 0) { break; }
+            if (this.bricks.isEmpty()) { break; }
             if (i > (this.bricks.size - 1)) {continue;}
             if (this.bricks.get(i) == null) {continue;}
             if (this.bricks.get(i).isDestroyed()) {
@@ -461,12 +468,7 @@ public class GamePlayScreen extends BaseScreen {
     }
 
 
-    @Override
-    public void dispose() {
-        // Освобождение игровых ресурсов
-        if (this.topBlackoutView != null) {topBlackoutView.dispose();}
 
-    }
 
     public Bomb getBomb(Body bombBody) {
         Bomb result = null;
@@ -478,5 +480,23 @@ public class GamePlayScreen extends BaseScreen {
         }
         return result;
 
+    }
+
+    @Override
+    public void dispose() {
+        // Освобождение игровых ресурсов
+        if (this.topBlackoutView != null) {topBlackoutView.dispose();}
+        if (this.exitButton != null) {this.exitButton.dispose();}
+        if (this.timer != null) {this.timer.dispose();}
+
+
+        for (Bomb bomb: this.bombs) {bomb.dispose();}
+        for (Ball ball: this.balls) {ball.dispose();}
+        for (Wall wall: this.walls) {wall.dispose();}
+        for (BonBon bonbon: this.bonbons) {bonbon.dispose();}
+        for (ImageView live: this.lives) {live.dispose();}
+        for (Brick brick: this.bricks) {brick.dispose();}
+
+        if (this.world != null) {this.world.dispose();}
     }
 }

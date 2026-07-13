@@ -101,22 +101,24 @@ public class Main extends ApplicationAdapter {
 //        this.recordsTable = new RecordsTableManager(GameSettings.MAX_RECORDS);
         if ((data == null) || (data.length() == 0)) { this.recordsTable = new RecordsTableManager(GameSettings.MAX_RECORDS);}
         else { this.recordsTable = new RecordsTableManager(GameSettings.MAX_RECORDS, data); }
-
-
         createScreens();
-
+//        this.resize(this.gameSession.getScreenWidth(),this.gameSession.getScreenHeight());
         this.setScreen(this.getMenu());
     }
 
 
     public void createScreens() {
+//        if (this.menu != null) { this.menu.dispose(); }
         this.menu = new MainMenuScreen(this);
+        if (this.game != null) { this.game.dispose(); }
         this.game = new GamePlayScreen(this);
+//        if (this.finish != null) { this.finish.dispose(); }
         this.finish = new GameOverScreen(this);
+        if (this.settings != null) { this.settings.dispose(); }
         this.settings = new SettingsScreen(this);
+//        if (this.records != null) {this.records.dispose();}
         this.records = new RecordsScreen(this);
     }
-
 
     public void setScreen(BaseScreen screen) {
         // Сбрасываем состояние клавиатуры
@@ -126,7 +128,7 @@ public class Main extends ApplicationAdapter {
 
         if (this.screen != null) { this.screen.hide(); }
         if (screen == this.getGame()) {
-            this.getGame().dispose();
+            if (this.getGame() != null) { this.getGame().dispose(); };
             this.game = new GamePlayScreen(this);
             screen = this.game;
         }
@@ -164,10 +166,7 @@ public class Main extends ApplicationAdapter {
         float delta = Gdx.graphics.getDeltaTime();
         this.screen.render(delta);
         this.screen.update(delta);
-//        this.draw();
-
     }
-
 
     @Override
     public void resize(int width, int height) {

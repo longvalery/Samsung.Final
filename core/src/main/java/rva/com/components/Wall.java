@@ -36,4 +36,8 @@ public class Wall {
     }
 
     public String getType() { return type; }
+
+    public void dispose() {
+
+    }
 }

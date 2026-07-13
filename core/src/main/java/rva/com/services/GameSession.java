@@ -62,7 +62,7 @@ public class GameSession {
 
 
     private void calcTablesSizes() {
-        this.tableCellPad = 5;
+        this.tableCellPad = 10;
         this.tablePad = 4 * this.tableCellPad;
         int width = (int) ((this.screenWidth - 2 * this.tablePad) / 7);
         this.tableColumn1Width = 2 * width;

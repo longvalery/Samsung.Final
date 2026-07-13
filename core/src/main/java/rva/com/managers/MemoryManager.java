@@ -11,14 +11,14 @@ public class MemoryManager {
         preferences.flush();
     }
     public static float loadSoundVolume() {
-        return preferences.getFloat("Sound");
+        return preferences.getFloat("Sound",1.0f);
     }
     public static void saveMusicVolume(float value) {
         preferences.putFloat("Music", value);
         preferences.flush();
     }
     public static float loadMusicVolume() {
-        return preferences.getFloat("Music");
+        return preferences.getFloat("Music", 1.0f);
     }
 
     public static void saveTableOfRecords(String data) {
